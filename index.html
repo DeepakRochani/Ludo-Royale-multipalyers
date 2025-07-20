@@ -128,7 +128,7 @@
             height: 75%;
             border-radius: 50%;
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease; /* THIS IS THE CULPRIT! */
             position: relative;
             z-index: 10;
             display: flex;
@@ -160,8 +160,8 @@
         
         .piece-animating {
             position: absolute !important;
-            /* transition: top 0.15s linear, left 0.15s linear; */ /* Transition handled by JS animation loop */
             z-index: 100;
+            transition: none !important; /* Disable all transitions during movement animation */
         }
 
         .dice { width: 80px; height: 80px; perspective: 1200px; }
@@ -757,7 +757,6 @@
             });
 
             // Update in-game player list (always show all 4 colors, even if not joined)
-            gamePlayerList.innerHTML = '';
             COLORS.forEach(color => {
                 const player = players.find(p => p.color === color);
                 const div = document.createElement('div');
