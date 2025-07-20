@@ -3,24 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multiplayer Ludo Game</title>
+    <title>Ludo Royale</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-       /* Sticky Roll Dice Button for Mobile - REMOVED */
-       /* #rollDiceBtn was removed, so this media query is no longer needed */
-       /* @media (max-width: 768px) {
-         #rollDiceBtn {
-           position: fixed;
-           bottom: 20px;
-           left: 50%;
-           transform: translateX(-50%);
-           width: calc(100% - 2rem);
-           max-width: 400px;
-           z-index: 100;
-           box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-         }
-       } */
+        /* Sticky Roll Dice Button for Mobile */
+        @media (max-width: 768px) {
+            #rollDiceBtn {
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: calc(100% - 2rem);
+                max-width: 400px;
+                z-index: 100;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            }
+        }
 
         :root {
             --red: #D83F31;
@@ -35,6 +34,11 @@
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #1f2937, #374151);
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
         }
 
         .glass-panel {
@@ -46,10 +50,9 @@
         }
 
         .ludo-board {
-            /* Adjusted for mobile friendly bigger board */
-            width: calc(100vmin - 4rem); /* Maximize width/height on smaller screens, leaving some padding */
-            height: calc(100vmin - 4rem);
-            max-width: 700px; /* Keep max-width for larger screens */
+            width: 95vmin;
+            height: 95vmin;
+            max-width: 700px;
             max-height: 700px;
             background-color: var(--board-dark);
             border: 6px solid #4a5568;
@@ -60,14 +63,6 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
             position: relative;
         }
-        /* Further media query for very small screens if 4rem is too much */
-        @media (max-width: 400px) {
-            .ludo-board {
-                width: calc(100vmin - 2rem);
-                height: calc(100vmin - 2rem);
-            }
-        }
-
 
         .cell {
             display: flex;
@@ -102,37 +97,34 @@
         }
         .center-triangle {
             width: 0; height: 0; border-style: solid;
-        }
-        /* Adjusted positioning for center triangles */
-        .center-triangle-red { 
-            border-width: 7vmin 8vmin 8vmin; 
-            border-color: transparent transparent var(--red) transparent; 
             position: absolute; 
-            top: 30.5vmin; /* Adjusted from 6vmin */
-            left: 30vmin; /* Adjusted from 4.5vmin */
+        }
+        /* Adjusted positioning for center triangles based on 95vmin board size */
+        .center-triangle-red { 
+            border-width: calc(95vmin / 15 * 2.5) calc(95vmin / 15 * 3) calc(95vmin / 15 * 3); 
+            border-color: transparent transparent var(--red) transparent; 
+            top: calc(95vmin / 15 * 6); 
+            left: calc(95vmin / 15 * 6); 
         }
         .center-triangle-green { 
-            border-width: 7vmin 8vmin 8vmin; 
+            border-width: calc(95vmin / 15 * 2.5) calc(95vmin / 15 * 3) calc(95vmin / 15 * 3); 
             border-color: transparent transparent var(--green) transparent; 
-            position: absolute; 
-            top: 30vmin; /* Adjusted from 4.5vmin */
-            left: 29.5vmin; /* Adjusted from 6vmin */
+            top: calc(95vmin / 15 * 6); 
+            left: calc(95vmin / 15 * 6); 
             transform: rotate(180deg); 
         }
         .center-triangle-yellow { 
-            border-width: 7vmin 8vmin 8vmin; 
+            border-width: calc(95vmin / 15 * 2.5) calc(95vmin / 15 * 3) calc(95vmin / 15 * 3); 
             border-color: transparent transparent var(--yellow) transparent; 
-            position: absolute; 
-            top: 30vmin; /* Adjusted from 6vmin */
-            left: 29.5vmin; /* Adjusted from 4.5vmin */
+            top: calc(95vmin / 15 * 6); 
+            left: calc(95vmin / 15 * 6); 
             transform: rotate(90deg); 
         }
         .center-triangle-blue { 
-            border-width: 7vmin 8vmin 8vmin; 
+            border-width: calc(95vmin / 15 * 2.5) calc(95vmin / 15 * 3) calc(95vmin / 15 * 3); 
             border-color: transparent transparent var(--blue) transparent; 
-            position: absolute; 
-           top: 30.5vmin; /* Adjusted from 6vmin */
-            left: 30vmin; /* Adjusted from 4.5vmin */
+            top: calc(95vmin / 15 * 6); 
+            left: calc(95vmin / 15 * 6); 
             transform: rotate(-90deg); 
         }
 
@@ -170,7 +162,7 @@
         
         .piece-animating {
             position: absolute !important;
-            transition: top 0.15s linear, left 0.15s linear;
+            /* transition: top 0.15s linear, left 0.15s linear; */ /* Transition handled by JS animation loop */
             z-index: 100;
         }
 
@@ -180,8 +172,7 @@
             100% { transform: scale(1); box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px var(--color); }
         }
 
-        .dice { width: 80px; height: 80px; perspective: 1200px; cursor: default;} /* Default cursor */
-        .dice.clickable { cursor: pointer; } /* New class for clickable dice */
+        .dice { width: 80px; height: 80px; perspective: 1200px; }
         .dice-cube { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 1.5s cubic-bezier(0.45, 0, 0.55, 1); }
         .dice-face {
             position: absolute;
@@ -195,6 +186,7 @@
             font-size: 36px;
             font-weight: bold;
             color: var(--board-dark);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
         }
         .face-1 { transform: rotateY(0deg) translateZ(40px); }
         .face-2 { transform: rotateY(90deg) translateZ(40px); }
@@ -207,7 +199,7 @@
             background: linear-gradient(145deg, #5a67d8, #7f9cf5);
             border: none;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2), inset 0 -2px 0 rgba(0,0,0,0.2);
-            outline: 2px solid transparent; /* Default outline for animation */
+            outline: none; /* Default outline for animation */
             transition: all 0.3s ease;
         }
         .btn-primary:hover {
@@ -268,9 +260,26 @@
             background: linear-gradient(45deg, #6366f1, #8b5cf6); /* Change gradient on active */
         }
         
+        /* Waiting room specific styles */
+        .player-list-item {
+            background: rgba(255,255,255,0.1);
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .player-color-dot {
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            border: 1px solid rgba(0,0,0,0.2);
+        }
+
     </style>
 </head>
-<body class="text-gray-200 flex items-center justify-center min-h-screen p-2 sm:p-4">
+<body class="text-gray-200">
 
     <div id="initialScreen" class="w-full max-w-lg p-8 glass-panel text-center">
         <h1 class="text-5xl font-bold mb-4 text-white drop-shadow-lg">Ludo Royale</h1>
@@ -295,10 +304,33 @@
         <p id="initialScreenError" class="text-red-400 mt-4 h-5"></p>
     </div>
 
+    <div id="waitingRoomScreen" class="hidden w-full max-w-lg p-8 glass-panel text-center">
+        <h2 class="text-4xl font-bold mb-4 text-white drop-shadow-lg">Waiting for Players</h2>
+        <p class="text-gray-300 mb-6">Share this code with your friends:</p>
+        
+        <div class="flex items-center justify-center gap-4 mb-8">
+            <span id="waitingRoomGameCode" class="text-4xl font-mono bg-gray-900/50 px-5 py-2 rounded-xl text-indigo-300 tracking-wider"></span>
+            <button id="copyCodeWaitingBtn" class="p-3 bg-gray-600/50 hover:bg-gray-500/50 rounded-xl outline-button" title="Copy code">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/></svg>
+            </button>
+        </div>
+
+        <div class="mb-8 text-left">
+            <h3 class="text-2xl font-semibold mb-3 text-white">Players:</h3>
+            <div id="playerList" class="space-y-2">
+                </div>
+        </div>
+        
+        <button id="startGameBtn" class="w-full text-white font-bold py-4 px-4 rounded-xl text-xl btn-animated btn-primary outline-button transition-all duration-300 hover:scale-105" disabled>
+            Start Game
+        </button>
+    </div>
+
+
     <div id="gameScreen" class="hidden w-full h-full">
         <div class="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-4 xl:gap-8 w-full h-full">
             
-            <div id="leftPanel" class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 order-2 lg:order-1">
+            <div class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 order-2 lg:order-1">
                 <div class="mb-4">
                     <p class="text-gray-400 text-sm">Room Code:</p>
                     <div class="flex items-center gap-2 mt-1">
@@ -308,6 +340,11 @@
                         </button>
                     </div>
                 </div>
+                <div class="mb-4">
+                    <h3 class="text-xl font-semibold mb-3 text-white">Players:</h3>
+                    <div id="gamePlayerList" class="space-y-2">
+                        </div>
+                </div>
             </div>
 
             <div id="boardContainer" class="flex flex-col items-center justify-center order-1 lg:order-2">
@@ -316,7 +353,8 @@
 
             <div class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 order-3">
                 <h3 class="text-xl font-semibold mb-3 text-white">Dice</h3>
-                <div id="diceContainer" class="flex justify-center items-center mb-4 h-28 hidden"> <div id="dice" class="dice">
+                <div class="flex justify-center items-center mb-4 h-28">
+                    <div id="dice" class="dice">
                         <div class="dice-cube" id="diceCube">
                             <div class="dice-face face-1">1</div><div class="dice-face face-2">2</div><div class="dice-face face-3">3</div><div class="dice-face face-4">4</div><div class="dice-face face-5">5</div><div class="dice-face face-6">6</div>
                         </div>
@@ -324,8 +362,8 @@
                 </div>
                 <p id="turnStatusDisplay" class="text-lg text-yellow-300 text-center mb-4 min-h-[40px] flex items-center justify-center"></p>
 
-                <button id="startGameBtn" class="w-full mt-4 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-3 px-4 rounded-xl text-lg btn-animated outline-button hidden">
-                    Start Game
+                <button id="rollDiceBtn" class="w-full text-white font-bold py-4 px-4 rounded-xl text-xl btn-animated btn-primary outline-button transition-all duration-300 hover:scale-105" disabled>
+                    Roll Dice
                 </button>
             </div>
         </div>
@@ -384,29 +422,31 @@
 
         // --- DOM ELEMENTS ---
         const initialScreen = document.getElementById('initialScreen');
+        const waitingRoomScreen = document.getElementById('waitingRoomScreen'); // New waiting room screen
         const gameScreen = document.getElementById('gameScreen');
         const createGameBtn = document.getElementById('createGameBtn');
         const joinGameBtn = document.getElementById('joinGameBtn');
         const gameCodeInput = document.getElementById('gameCodeInput');
-        const gameCodeDisplay = document.getElementById('gameCodeDisplay');
-        const copyCodeBtn = document.getElementById('copyCodeBtn');
+        const gameCodeDisplay = document.getElementById('gameCodeDisplay'); // In-game display
+        const waitingRoomGameCode = document.getElementById('waitingRoomGameCode'); // Waiting room display
+        const copyCodeBtn = document.getElementById('copyCodeBtn'); // In-game copy
+        const copyCodeWaitingBtn = document.getElementById('copyCodeWaitingBtn'); // Waiting room copy
         const startGameBtn = document.getElementById('startGameBtn');
         const ludoBoard = document.getElementById('ludoBoard');
-        // const rollDiceBtn = document.getElementById('rollDiceBtn'); // REMOVED
-        const dice = document.getElementById('dice'); // Reference to the dice element
-        const diceContainer = document.getElementById('diceContainer'); // New element for dice container
+        const rollDiceBtn = document.getElementById('rollDiceBtn');
         const diceCube = document.getElementById('diceCube');
-        const turnStatusDisplay = document.getElementById('turnStatusDisplay'); // New element for turn status
+        const turnStatusDisplay = document.getElementById('turnStatusDisplay');
         const initialScreenError = document.getElementById('initialScreenError');
         const winnerModal = document.getElementById('winner-modal');
         const winnerText = document.getElementById('winnerText');
         const playAgainBtn = document.getElementById('playAgainBtn');
         const initialScreenButtons = [createGameBtn, joinGameBtn];
-        const leftPanel = document.getElementById('leftPanel'); // New reference for left panel
+        const playerList = document.getElementById('playerList'); // Player list in waiting room
+        const gamePlayerList = document.getElementById('gamePlayerList'); // Player list in game screen
 
         // --- GAME STATE ---
         let currentUser = null;
-        let currentGameId = null; // This will store the actual Firestore document ID
+        let currentGameId = null; 
         let currentGameData = null;
         let unsubscribeGameListener = null;
         let isAnimating = false;
@@ -414,63 +454,49 @@
         // --- LUDO BOARD CONSTANTS ---
         const COLORS = ['red', 'green', 'yellow', 'blue'];
         const BOARD_SIZE = 15;
-        // boardLayout is not directly used for rendering cells, but for conceptual mapping
-        const boardLayout = {}; 
 
         // Main Path coordinates (0-51, total 52 cells)
         const MAIN_PATH = [
-            [6,1],[6,2],[6,3],[6,4],[6,5], // 0-4 (Yellow's path segment)
-            [5,6],[4,6],[3,6],[2,6],[1,6], // 5-9 (Path segment leading to Green)
+            [6,1],[6,2],[6,3],[6,4],[6,5], // 0-4 (Yellow's path segment towards Green)
+            [5,6],[4,6],[3,6],[2,6],[1,6], // 5-9 (Green's path segment towards Top-Middle)
             [0,6],[0,7],[0,8],             // 10-12 (Top middle 3 cells)
-            [1,8],[2,8],[3,8],[4,8],[5,8], // 13-17 (Green's path segment)
-            [6,9],[6,10],[6,11],[6,12],[6,13], // 18-22 (Path segment leading to Blue)
+            [1,8],[2,8],[3,8],[4,8],[5,8], // 13-17 (Green's path segment towards Blue)
+            [6,9],[6,10],[6,11],[6,12],[6,13], // 18-22 (Blue's path segment towards Right-Middle)
             [6,14],[7,14],[8,14],          // 23-25 (Right middle 3 cells)
-            [8,13],[8,12],[8,11],[8,10],[8,9], // 26-30 (Blue's path segment)
-            [9,8],[10,8],[11,8],[12,8],[13,8], // 31-35 (Path segment leading to Red)
+            [8,13],[8,12],[8,11],[8,10],[8,9], // 26-30 (Blue's path segment towards Red)
+            [9,8],[10,8],[11,8],[12,8],[13,8], // 31-35 (Red's path segment towards Bottom-Middle)
             [14,8],[14,7],[14,6],          // 36-38 (Bottom middle 3 cells)
-            [13,6],[12,6],[11,6],[10,6],[9,6], // 39-43 (Red's path segment)
-            [8,5],[8,4],[8,3],[8,2],[8,1], // 44-48 (Path segment leading back to Yellow)
+            [13,6],[12,6],[11,6],[10,6],[9,6], // 39-43 (Red's path segment towards Yellow)
+            [8,5],[8,4],[8,3],[8,2],[8,1], // 44-48 (Yellow's path segment towards Left-Middle)
             [8,0],[7,0],[6,0]              // 49-51 (Left middle 3 cells, completes the loop)
         ];
 
-        // Home Path coordinates (0-5 for each color) - CORRECTED
+        // Home Path coordinates (0-5 for each color)
         const HOME_PATHS = {
-            // Yellow's home path: Row 7, columns 1 to 6 (leading into center from left)
             yellow: [[7,1],[7,2],[7,3],[7,4],[7,5],[7,6]], 
-            // Green's home path: Columns 7, rows 1 to 6 (leading into center from top)
             green: [[1,7],[2,7],[3,7],[4,7],[5,7],[6,7]],
-            // Blue's home path: Row 7, columns 13 to 8 (leading into center from right)
             blue: [[7,13],[7,12],[7,11],[7,10],[7,9],[7,8]],
-            // Red's home path: Columns 7, rows 13 to 8 (leading into center from bottom)
             red: [[13,7],[12,7],[11,7],[10,7],[9,7],[8,7]]
         };
 
-        // Corrected Starting positions on MAIN_PATH for each color based on visual layout
+        // Starting positions on MAIN_PATH for each color based on visual layout
         const START_POSITIONS = { 
-            yellow: 0,   // Yellow's start cell: [6,1] (index 0 of MAIN_PATH)
+            red: 39,   // Red's start cell: [13,6] (index 39 of MAIN_PATH)
             green: 13,   // Green's start cell: [1,8] (index 13 of MAIN_PATH)
-            blue: 26,    // Blue's start cell: [8,13] (index 26 of MAIN_PATH)
-            red: 39      // Red's start cell: [13,6] (index 39 of MAIN_PATH)
+            yellow: 0,   // Yellow's start cell: [6,1] (index 0 of MAIN_PATH)
+            blue: 26     // Blue's start cell: [8,13] (index 26 of MAIN_PATH)
         };
 
-        // Base coordinates for each color (where pieces start)
-        const BASE_COORDS = {
-            red: [[10,1],[10,2],[11,1],[11,2]],
-            green: [[1,10],[1,11],[2,10],[2,11]],
-            yellow: [[1,1],[1,2],[2,1],[2,2]],
-            blue: [[10,10],[10,11],[11,10],[11,11]]
-        };
-
-        // Updated Safe spots on the main path (indices of MAIN_PATH) based on user's request
+        // Safe spots on the main path (indices of MAIN_PATH)
         const SAFE_SPOTS = [
             0,  // Yellow's start ([6,1])
-            8,  // Safe spot (from user's request)
+            8,  // Yellow's second safe spot
             13, // Green's start ([1,8])
-            21, // Safe spot (from user's request)
+            21, // Green's second safe spot
             26, // Blue's start ([8,13])
-            34, // Safe spot (from user's request)
+            34, // Blue's second safe spot
             39, // Red's start ([13,6])
-            47  // Safe spot (from user's request)
+            47  // Red's second safe spot
         ];
 
         // Total length of the active track (52 main path cells + 6 home path cells)
@@ -478,7 +504,6 @@
         const HOME_POSITION_INDICATOR = 58; // Special indicator for being home
 
         // Pre-calculate the full linear path coordinates for each player
-        // This makes animation and rendering based on absolutePosition much easier
         const PLAYER_FULL_TRACK_COORDS = {
             red: [], green: [], yellow: [], blue: []
         };
@@ -516,24 +541,20 @@
                 initialScreenError.textContent = ""; // Clear any previous auth errors
             } else {
                 try {
-                    // Attempt to sign in with custom token if provided
                     if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                         await signInWithCustomToken(auth, __initial_auth_token);
                     } else {
-                        // If no custom token, sign in anonymously
                         await signInAnonymously(auth);
                     }
                 } catch (error) {
                     console.error("Authentication failed during initial attempt:", error);
                     let errorMessage = "Authentication failed. Please refresh the page.";
 
-                    // If custom token failed with mismatch, try anonymous sign-in as a fallback
                     if (error.code === 'auth/custom-token-mismatch') {
                         console.warn("Custom token mismatch, attempting anonymous sign-in as fallback.");
                         try {
                             await signInAnonymously(auth);
-                            // If anonymous sign-in succeeds, onAuthStateChanged will be called again with the new user
-                            return; // Exit here, let the next onAuthStateChanged handle the success
+                            return; 
                         } catch (anonError) {
                             console.error("Anonymous sign-in fallback also failed:", anonError);
                             errorMessage = `Authentication failed: Both custom token and anonymous sign-in failed (${anonError.code}). Please refresh.`;
@@ -542,7 +563,7 @@
                         errorMessage = `Auth failed: ${error.code.replace('auth/', '').replace(/-/g, ' ').toUpperCase()}. Please refresh.`;
                     }
                     initialScreenError.textContent = errorMessage;
-                    setButtonsDisabled(false, 'Auth Failed'); // Re-enable buttons with error message
+                    setButtonsDisabled(false, 'Auth Failed');
                 }
             }
         });
@@ -587,9 +608,8 @@
             // Main Path
             MAIN_PATH.forEach((coords, i) => {
                 const [row, col] = coords;
-                // Skip rendering if this coordinate is part of any home path
                 if (isHomePathCoord(row, col)) {
-                    return; // Skip this iteration to prevent overlap
+                    return; 
                 }
 
                 const cell = document.createElement('div');
@@ -614,14 +634,12 @@
                 HOME_PATHS[color].forEach((coords, i) => {
                     const [row, col] = coords;
                     const cell = document.createElement('div');
-                    // Ensure the correct color class is applied to the home path cells
                     cell.className = `cell cell-path cell-${color}`; 
                     cell.style.gridRow = row + 1;
                     cell.style.gridColumn = col + 1;
                     cell.dataset.type = `home-${color}`;
                     cell.dataset.index = i;
 
-                    // Check if this home path cell is also a main path safe spot or start position
                     const mainPathIndex = mainPathCoordsToIndex.get(`${row},${col}`);
                     if (mainPathIndex !== undefined) {
                         if (SAFE_SPOTS.includes(mainPathIndex)) {
@@ -648,54 +666,55 @@
         function renderGame(gameData) {
             if (!gameData) return;
             currentGameData = gameData;
-            console.log("Rendering game with data:", JSON.parse(JSON.stringify(gameData))); // Log full game data
-            
-            // Remove all existing pieces before re-rendering to prevent duplicates
-            document.querySelectorAll('.piece').forEach(p => p.remove());
-            
-            // Pieces
-            gameData.players.forEach(player => {
-                player.pieces.forEach((pieceData, i) => {
-                    const pieceEl = document.createElement('div');
-                    pieceEl.className = `piece ${player.color}`;
-                    pieceEl.dataset.color = player.color;
-                    pieceEl.dataset.pieceIndex = i;
-                    
-                    let targetCell;
-                    if (pieceData.state === 'base') {
-                        // Pieces in base are appended to the specific base-inner div
-                        targetCell = document.querySelector(`#base-inner-${player.color}`);
-                        console.log(`Player ${player.color}, Piece ${i}: State=base. Attempting to find targetCell: #base-inner-${player.color}`);
-                    } else if (pieceData.state === 'home') {
-                        // Pieces in home are appended to the center house
-                        targetCell = document.querySelector('.center-house');
-                        console.log(`Player ${player.color}, Piece ${i}: State=home. Attempting to find targetCell: .center-house`);
-                    } else if (pieceData.state === 'active') {
-                        // Active pieces are on the PLAYER_FULL_TRACK_COORDS
-                        targetCell = getCellElementByAbsolutePosition(player.color, pieceData.absolutePosition);
-                        console.log(`Player ${player.color}, Piece ${i}: State=active, absolutePosition=${pieceData.absolutePosition}. Attempting to find targetCell using helper.`);
-                    }
+            console.log("Rendering game with data:", JSON.parse(JSON.stringify(gameData)));
 
-                    if(targetCell) {
-                        targetCell.appendChild(pieceEl);
-                        console.log(`Piece ${player.color}-${i} successfully appended to`, targetCell);
-                    } else {
-                        console.error(`ERROR: Target cell not found for piece ${player.color}-${i} (state: ${pieceData.state}, absolutePosition: ${pieceData.absolutePosition}). Piece not rendered.`);
-                    }
-                });
-            });
-
-            // Game State UI
+            // Update player lists
+            updatePlayerLists(gameData.players);
+            
             if (gameData.state === 'waiting') {
-                turnStatusDisplay.textContent = 'Waiting for players...';
+                initialScreen.classList.add('hidden');
+                gameScreen.classList.add('hidden');
+                waitingRoomScreen.classList.remove('hidden');
+                waitingRoomGameCode.textContent = gameData.roomCode;
+
                 const isCreator = gameData.creatorId === currentUser.uid;
-                startGameBtn.classList.toggle('hidden', !(isCreator && gameData.players.length >= 2));
-                leftPanel.classList.remove('hidden'); // Show room code when waiting
-                diceContainer.classList.add('hidden'); // Hide dice when waiting
+                startGameBtn.classList.toggle('hidden', !isCreator);
+                startGameBtn.disabled = !(isCreator && gameData.players.length >= 2);
+                startGameBtn.textContent = `Start Game (${gameData.players.length}/4 Players)`;
             } else if (gameData.state === 'playing') {
-                startGameBtn.classList.add('hidden');
-                leftPanel.classList.add('hidden'); // Hide room code when playing
+                waitingRoomScreen.classList.add('hidden');
+                initialScreen.classList.add('hidden');
+                gameScreen.classList.remove('hidden');
+                gameCodeDisplay.textContent = gameData.roomCode;
                 
+                // Remove all existing pieces before re-rendering to prevent duplicates
+                document.querySelectorAll('.piece').forEach(p => p.remove());
+                
+                // Pieces
+                gameData.players.forEach(player => {
+                    player.pieces.forEach((pieceData, i) => {
+                        const pieceEl = document.createElement('div');
+                        pieceEl.className = `piece ${player.color}`;
+                        pieceEl.dataset.color = player.color;
+                        pieceEl.dataset.pieceIndex = i;
+                        
+                        let targetCell;
+                        if (pieceData.state === 'base') {
+                            targetCell = document.querySelector(`#base-inner-${player.color}`);
+                        } else if (pieceData.state === 'home') {
+                            targetCell = document.querySelector('.center-house');
+                        } else if (pieceData.state === 'active') {
+                            targetCell = getCellElementByAbsolutePosition(player.color, pieceData.absolutePosition);
+                        }
+
+                        if(targetCell) {
+                            targetCell.appendChild(pieceEl);
+                        } else {
+                            console.error(`ERROR: Target cell not found for piece ${player.color}-${i} (state: ${pieceData.state}, absolutePosition: ${pieceData.absolutePosition}). Piece not rendered.`);
+                        }
+                    });
+                });
+
                 const myColor = gameData.players.find(p => p.id === currentUser.uid)?.color;
                 const isMyTurn = gameData.currentTurn === myColor;
                 
@@ -704,30 +723,67 @@
                     turnStatusDisplay.innerHTML = `${gameData.currentTurn.charAt(0).toUpperCase() + gameData.currentTurn.slice(1)} rolled a <strong class="text-2xl text-white">${gameData.diceValue}</strong>. Make a move!`;
                 }
 
-                // Show/hide dice based on turn and dice value
-                if (isMyTurn && gameData.diceValue === null && !isAnimating) {
-                    diceContainer.classList.remove('hidden');
-                    dice.classList.add('clickable'); // Make dice clickable
-                } else {
-                    diceContainer.classList.add('hidden');
-                    dice.classList.remove('clickable'); // Remove clickable class
-                }
-
+                rollDiceBtn.disabled = !isMyTurn || gameData.diceValue !== null || isAnimating;
                 updateMovablePieces(isMyTurn, gameData.diceValue);
 
             } else if (gameData.state === 'finished') {
-                // rollDiceBtn.disabled = true; // No longer applies
-                diceContainer.classList.add('hidden'); // Hide dice when game finished
-                turnStatusDisplay.textContent = ''; // Clear turn status when game is finished
+                rollDiceBtn.disabled = true;
+                turnStatusDisplay.textContent = ''; 
                 winnerText.textContent = `${gameData.winner.charAt(0).toUpperCase() + gameData.winner.slice(1)}`;
                 winnerModal.classList.remove('hidden');
-                leftPanel.classList.remove('hidden'); // Show room code when game is finished (user can copy for next game)
             }
+        }
+
+        function updatePlayerLists(players) {
+            // Update waiting room player list
+            playerList.innerHTML = '';
+            players.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'player-list-item';
+                div.innerHTML = `
+                    <div class="player-color-dot" style="background-color: var(--${p.color});"></div>
+                    <span class="text-white">${p.color.charAt(0).toUpperCase() + p.color.slice(1)} Player</span>
+                    ${p.id === currentGameData.creatorId ? '<span class="ml-auto text-sm text-gray-400">(Host)</span>' : ''}
+                    ${p.id === currentUser.uid ? '<span class="ml-2 text-sm text-indigo-300">(You)</span>' : ''}
+                `;
+                playerList.appendChild(div);
+            });
+
+            // Update in-game player list (always show all 4 colors, even if not joined)
+            gamePlayerList.innerHTML = '';
+            COLORS.forEach(color => {
+                const player = players.find(p => p.color === color);
+                const div = document.createElement('div');
+                div.className = 'player-list-item';
+                let playerName = `${color.charAt(0).toUpperCase() + color.slice(1)} Player`;
+                let playerStatus = '';
+                
+                if (player) {
+                    if (player.id === currentUser.uid) {
+                        playerStatus = '(You)';
+                    } else if (player.id === currentGameData.creatorId) {
+                        playerStatus = '(Host)';
+                    }
+                    const piecesHomeCount = player.pieces.filter(p => p.state === 'home').length;
+                    if (currentGameData.state === 'playing') {
+                        playerStatus += ` - Home: ${piecesHomeCount}/4`;
+                    }
+                } else {
+                    playerName = `${color.charAt(0).toUpperCase() + color.slice(1)} (Empty)`;
+                    div.classList.add('opacity-50');
+                }
+
+                div.innerHTML = `
+                    <div class="player-color-dot" style="background-color: var(--${color});"></div>
+                    <span class="text-white">${playerName}</span>
+                    <span class="ml-auto text-sm text-gray-400">${playerStatus}</span>
+                `;
+                gamePlayerList.appendChild(div);
+            });
         }
         
         // --- GAME LOGIC ---
         
-        // Function to calculate the piece's next state and absolute position based on dice roll
         function calculateNewPieceStateAndPosition(playerColor, currentPieceState, currentAbsolutePosition, diceValue) {
             let newState = currentPieceState;
             let newAbsolutePosition = currentAbsolutePosition;
@@ -738,22 +794,22 @@
                     newState = 'active';
                     newAbsolutePosition = 0; // First cell on player's full track
                 } else {
-                    isValidMove = false; // Cannot move from base if not a 6
+                    isValidMove = false;
                 }
             } else if (currentPieceState === 'active') {
                 const potentialPosition = currentAbsolutePosition + diceValue;
                 
-                if (potentialPosition <= MAX_ACTIVE_POSITION) { // Still on the track or landed exactly on the last home path cell (index 57)
+                if (potentialPosition <= MAX_ACTIVE_POSITION) {
                     newState = 'active';
                     newAbsolutePosition = potentialPosition;
-                } else if (potentialPosition === (MAX_ACTIVE_POSITION + 1)) { // Landed exactly one step beyond the last home path cell (index 58), meaning it's home
+                } else if (potentialPosition === (MAX_ACTIVE_POSITION + 1)) {
                     newState = 'home';
-                    newAbsolutePosition = HOME_POSITION_INDICATOR; // Special value for being home
-                } else { // Overshot home
-                    isValidMove = false;
+                    newAbsolutePosition = HOME_POSITION_INDICATOR;
+                } else {
+                    isValidMove = false; // Overshot home
                 }
             } else if (currentPieceState === 'home') {
-                isValidMove = false; // Already home, cannot move
+                isValidMove = false;
             }
 
             return { state: newState, absolutePosition: newAbsolutePosition, isValid: isValidMove };
@@ -765,6 +821,7 @@
 
             const myColor = currentGameData.currentTurn;
             const player = currentGameData.players.find(p => p.color === myColor);
+            if (!player) return; // Current player might not be in the local players array yet if just joined
 
             player.pieces.forEach((piece, index) => {
                 const { isValid } = calculateNewPieceStateAndPosition(myColor, piece.state, piece.absolutePosition, diceValue);
@@ -780,30 +837,26 @@
         
         async function animatePieceMove(pieceEl, color, startAbsolutePosition, endAbsolutePosition) {
             isAnimating = true;
-            // Temporarily disable dice clicks and highlight movable pieces during animation
-            dice.classList.remove('clickable');
+            rollDiceBtn.disabled = true;
             document.querySelectorAll('.piece.movable').forEach(p => p.classList.remove('movable'));
 
             const boardRect = ludoBoard.getBoundingClientRect();
             
-            // Temporarily make piece absolute for animation
             pieceEl.classList.add('piece-animating');
             ludoBoard.appendChild(pieceEl); // Move to board container for absolute positioning
 
-            // Get the starting coordinates
             let startCoords;
             if (startAbsolutePosition === -1) { // From base
-                // For animation, we can start from the approximate center of the base inner cell
                 const baseInnerEl = document.querySelector(`#base-inner-${color}`);
                 if (baseInnerEl) {
                     const baseRect = baseInnerEl.getBoundingClientRect();
                     startCoords = [
-                        (baseRect.top + baseRect.bottom) / 2 - boardRect.top,
-                        (baseRect.left + baseRect.right) / 2 - boardRect.left
+                        baseRect.top + baseRect.height / 2 - boardRect.top - pieceEl.offsetHeight / 2,
+                        baseRect.left + baseRect.width / 2 - boardRect.left - pieceEl.offsetWidth / 2
                     ];
                 } else {
                     console.error("Could not find base inner element for animation start.");
-                    startCoords = [0,0]; // Fallback
+                    startCoords = [0,0];
                 }
             } else {
                 const cellEl = getCellElementByAbsolutePosition(color, startAbsolutePosition);
@@ -815,7 +868,7 @@
                     ];
                 } else {
                     console.error(`Could not find start cell element for animation at absolute position ${startAbsolutePosition}`);
-                    startCoords = [0,0]; // Fallback
+                    startCoords = [0,0];
                 }
             }
             pieceEl.style.top = `${startCoords[0]}px`;
@@ -856,7 +909,6 @@
             if (absolutePosition === HOME_POSITION_INDICATOR) {
                 return document.querySelector('.center-house');
             }
-            // Ensure absolutePosition is within valid bounds for PLAYER_FULL_TRACK_COORDS
             if (absolutePosition < 0 || absolutePosition >= PLAYER_FULL_TRACK_COORDS[color].length) {
                 console.error(`Invalid absolutePosition: ${absolutePosition} for color: ${color}`);
                 return null;
@@ -866,15 +918,12 @@
             if (coords) {
                 const [row, col] = coords;
                 
-                // If the piece is on the main path (first 52 cells of PLAYER_FULL_TRACK_COORDS)
-                if (absolutePosition < 52) {
-                    // Find the index of these coords in the global MAIN_PATH array
+                if (absolutePosition < 52) { // Main path
                     const mainPathIndex = MAIN_PATH.findIndex(p => p[0] === row && p[1] === col);
                     if (mainPathIndex !== -1) {
                         return document.querySelector(`.cell[data-type='path'][data-index='${mainPathIndex}']`);
                     }
-                } else { // Piece is on its home path (indices 52-57 of PLAYER_FULL_TRACK_COORDS)
-                    // The index within HOME_PATHS for this color is absolutePosition - 52
+                } else { // Home path
                     const homePathIndex = absolutePosition - 52;
                     return document.querySelector(`.cell[data-type='home-${color}'][data-index='${homePathIndex}']`);
                 }
@@ -905,20 +954,19 @@
                 const newGame = {
                     creatorId: currentUser.uid,
                     state: 'waiting', 
-                    roomCode: roomCode, // Store the numerical room code
+                    roomCode: roomCode, 
                     players: [{
                         id: currentUser.uid, color: 'red',
-                        pieces: Array(4).fill(null).map(() => ({ state: 'base', absolutePosition: -1 })) // Use absolutePosition
+                        pieces: Array(4).fill(null).map(() => ({ state: 'base', absolutePosition: -1 }))
                     }],
                     currentTurn: 'red', diceValue: null, winner: null, createdAt: new Date().toISOString(),
                 };
                 console.log("Attempting to add new game to Firestore:", newGame);
                 const gameRef = await addDoc(collection(db, `artifacts/${appId}/public/data/ludoGames`), newGame);
                 console.log("Game created with Firestore Document ID:", gameRef.id, "and Room Code:", roomCode);
-                joinGame(roomCode); // Pass the numerical roomCode to joinGame
+                joinGame(roomCode);
             } catch (e) {
                 console.error("Error creating game:", e);
-                // More specific error messages for the user
                 if (e.code && e.code.startsWith('permission-denied')) {
                     initialScreenError.textContent = "Failed to create game: Permission Denied. Check Firestore Security Rules.";
                 } else if (e.code) {
@@ -930,7 +978,7 @@
             }
         }
 
-        async function joinGame(code) { // 'code' is now the numerical roomCode
+        async function joinGame(code) {
             if (unsubscribeGameListener) unsubscribeGameListener();
             
             const q = query(collection(db, `artifacts/${appId}/public/data/ludoGames`), where("roomCode", "==", code));
@@ -943,8 +991,8 @@
                 return;
             }
 
-            const docSnap = querySnapshot.docs[0]; // Get the first document matching the code
-            const gameId = docSnap.id; // Get the actual Firestore document ID
+            const docSnap = querySnapshot.docs[0];
+            const gameId = docSnap.id;
             const gameData = docSnap.data();
 
             const playerExists = gameData.players.some(p => p.id === currentUser.uid);
@@ -954,7 +1002,6 @@
                 if (gameData.state !== 'waiting') { initialScreenError.textContent = "Game has started."; return; }
                 
                 const availableColors = COLORS.filter(c => !gameData.players.some(p => p.color === c));
-                // Prevent adding player with undefined color if no colors are left (though game full check should catch this)
                 if (availableColors.length === 0) {
                     initialScreenError.textContent = "No available colors for new player.";
                     console.error("Attempted to join, but no available colors for a new player.");
@@ -962,24 +1009,22 @@
                 }
                 const newPlayer = {
                     id: currentUser.uid, color: availableColors[0],
-                    pieces: Array(4).fill(null).map(() => ({ state: 'base', absolutePosition: -1 })) // Use absolutePosition
+                    pieces: Array(4).fill(null).map(() => ({ state: 'base', absolutePosition: -1 }))
                 };
                 await updateDoc(doc(db, `artifacts/${appId}/public/data/ludoGames`, gameId), { players: [...gameData.players, newPlayer] });
             }
             
-            currentGameId = gameId; // Store the actual Firestore document ID for subsequent operations
-            gameCodeDisplay.textContent = gameData.roomCode; // Display the numerical room code
+            currentGameId = gameId;
             initialScreen.classList.add('hidden');
-            gameScreen.classList.remove('hidden');
+            waitingRoomScreen.classList.remove('hidden'); // Show waiting room first
 
-            // Listen for real-time updates to the game document
             unsubscribeGameListener = onSnapshot(doc(db, `artifacts/${appId}/public/data/ludoGames`, gameId), (doc) => {
                 if (doc.exists()) {
                     renderGame(doc.data());
                 } else {
                     console.log("Game document no longer exists.");
-                    // Handle case where game is deleted or no longer accessible
                     initialScreen.classList.remove('hidden');
+                    waitingRoomScreen.classList.add('hidden');
                     gameScreen.classList.add('hidden');
                     initialScreenError.textContent = "Game ended or deleted.";
                     if (unsubscribeGameListener) {
@@ -995,55 +1040,55 @@
 
         async function handleStartGame() {
             if (!currentGameId || currentGameData.creatorId !== currentUser.uid) return;
+            // Ensure there are at least 2 players to start
+            if (currentGameData.players.length < 2) {
+                console.warn("Cannot start game: Less than 2 players.");
+                return;
+            }
             await updateDoc(doc(db, `artifacts/${appId}/public/data/ludoGames`, currentGameId), { state: 'playing' });
         }
 
         async function handleRollDice() {
-            // Check if dice should be clickable based on game state
-            const myColor = currentGameData.players.find(p => p.id === currentUser.uid)?.color;
-            const isMyTurn = currentGameData.currentTurn === myColor;
-
-            if (!isMyTurn || currentGameData.diceValue !== null || isAnimating) {
-                console.log("Cannot roll dice: Not my turn, dice already rolled, or animating.");
-                return;
-            }
-
+            if (rollDiceBtn.disabled) return;
             const diceResult = Math.floor(Math.random() * 6) + 1;
             
             const rotations = {
                 1: 'rotateY(0deg)', 2: 'rotateY(-90deg)', 3: 'rotateY(-180deg)',
                 4: 'rotateY(90deg)', 5: 'rotateX(-90deg)', 6: 'rotateX(90deg)'
             };
-            // Apply a random initial rotation for a more dynamic roll animation
             diceCube.style.transform = `rotateX(${Math.random()*1440+720}deg) rotateY(${Math.random()*1440+720}deg)`;
             
             setTimeout(async () => {
-                // Set final rotation based on dice result
                 diceCube.style.transform = rotations[diceResult];
                 const gameRef = doc(db, `artifacts/${appId}/public/data/ludoGames`, currentGameId);
                 
-                const player = currentGameData.players.find(p => p.color === myColor); // Use myColor
+                const myColor = currentGameData.currentTurn;
+                const player = currentGameData.players.find(p => p.color === myColor);
                 
-                // Check if any piece can move
                 const hasValidMoves = player.pieces.some((p, i) => calculateNewPieceStateAndPosition(myColor, p.state, p.absolutePosition, diceResult).isValid);
                 
                 await updateDoc(gameRef, { diceValue: diceResult });
 
                 if (!hasValidMoves) {
-                    // If no valid moves, automatically pass the turn after a short delay
                     setTimeout(() => passTurn(), 1500);
                 }
-            }, 1500); // Allow time for the dice animation to play
+            }, 1500);
         }
         
         async function handlePieceMove(e) {
             const pieceEl = e.target.closest('.piece.movable');
-            if (!pieceEl || isAnimating) return; // Prevent multiple moves or moves during animation
+            if (!pieceEl || isAnimating) return;
 
             const color = pieceEl.dataset.color;
             const pieceIndex = parseInt(pieceEl.dataset.pieceIndex);
             
-            // Create a deep copy to modify local state for animation without directly altering Firestore data yet
+            // Ensure it's the current user's turn and their piece
+            const myColor = currentGameData.players.find(p => p.id === currentUser.uid)?.color;
+            if (currentGameData.currentTurn !== myColor || color !== myColor) {
+                console.warn("Not your turn or not your piece.");
+                return;
+            }
+
             const playersCopy = JSON.parse(JSON.stringify(currentGameData.players));
             const player = playersCopy.find(p => p.color === color);
             const pieceToMove = player.pieces[pieceIndex];
@@ -1053,7 +1098,7 @@
                 calculateNewPieceStateAndPosition(color, pieceToMove.state, pieceToMove.absolutePosition, diceValue);
 
             if (!moveIsValid) {
-                console.warn("Attempted invalid move.");
+                console.warn("Attempted invalid move for piece:", pieceToMove);
                 return;
             }
 
@@ -1063,43 +1108,37 @@
             pieceToMove.state = newPieceState;
             pieceToMove.absolutePosition = newAbsolutePosition;
             
-            // Perform the visual animation of the piece moving
             await animatePieceMove(pieceEl, color, startAbsolutePosition, newAbsolutePosition);
 
-            // --- Now update Firestore with the new game state ---
             const gameRef = doc(db, `artifacts/${appId}/public/data/ludoGames`, currentGameId);
-            const updates = { players: playersCopy }; // Update the players array in Firestore
+            const updates = { players: playersCopy };
 
             // Check if another piece is at the destination and is NOT on a safe spot.
-            // If it's another player's piece and not on a safe spot, send it back to base.
-            const targetCoords = PLAYER_FULL_TRACK_COORDS[color][newAbsolutePosition];
-            const opponentPiece = playersCopy
-                .filter(p => p.color !== color) // Only consider opponent players
-                .flatMap(p => p.pieces.map(piece => ({ piece, playerColor: p.color })))
-                .find(op => {
-                    // Check if opponent piece is active and at the same coordinates
-                    const opCoords = PLAYER_FULL_TRACK_COORDS[op.playerColor][op.piece.absolutePosition];
-                    return op.piece.state === 'active' && opCoords && opCoords[0] === targetCoords[0] && opCoords[1] === targetCoords[1];
-                });
-
-            if (opponentPiece) {
-                // Check if the target cell is a safe spot
-                // Need to find the MAIN_PATH index of the targetCoords to check against SAFE_SPOTS
+            if (newPieceState === 'active') { // Only check for kills if the piece is active (not going home)
+                const targetCoords = PLAYER_FULL_TRACK_COORDS[color][newAbsolutePosition];
                 const targetMainPathIndex = MAIN_PATH.findIndex(p => p[0] === targetCoords[0] && p[1] === targetCoords[1]);
                 const isTargetSafeSpot = SAFE_SPOTS.includes(targetMainPathIndex);
 
-                if (!isTargetSafeSpot) {
-                    // If not a safe spot, send opponent piece to base
-                    const opponentPlayer = playersCopy.find(p => p.color === opponentPiece.playerColor);
-                    const opponentPieceIndex = opponentPlayer.pieces.indexOf(opponentPiece.piece);
-                    opponentPlayer.pieces[opponentPieceIndex] = { state: 'base', absolutePosition: -1 };
-                    console.log(`Killed opponent piece ${opponentPiece.playerColor}-${opponentPieceIndex}. Sent to base.`);
+                if (!isTargetSafeSpot) { // Only attempt kill if not a safe spot
+                    const opponentPieceInfo = playersCopy
+                        .filter(p => p.color !== color) 
+                        .flatMap(p => p.pieces.map(piece => ({ piece, playerColor: p.color })))
+                        .find(op => {
+                            const opCoords = PLAYER_FULL_TRACK_COORDS[op.playerColor][op.piece.absolutePosition];
+                            return op.piece.state === 'active' && opCoords && opCoords[0] === targetCoords[0] && opCoords[1] === targetCoords[1];
+                        });
+
+                    if (opponentPieceInfo) {
+                        const opponentPlayer = playersCopy.find(p => p.color === opponentPieceInfo.playerColor);
+                        const opponentPieceIndex = opponentPlayer.pieces.indexOf(opponentPieceInfo.piece);
+                        opponentPlayer.pieces[opponentPieceIndex] = { state: 'base', absolutePosition: -1 };
+                        console.log(`Killed opponent piece ${opponentPieceInfo.playerColor}-${opponentPieceIndex}. Sent to base.`);
+                    }
                 } else {
-                    console.log(`Landed on opponent piece at safe spot. No kill.`);
+                    console.log(`Landed on a safe spot (${targetCoords}). No kill.`);
                 }
             }
             
-
             // Check for winner
             const allPiecesHome = player.pieces.every(p => p.state === 'home');
             if (allPiecesHome) {
@@ -1107,21 +1146,18 @@
                 updates.state = 'finished';
             }
 
-            // Pass turn if dice was not a 6, or if all pieces are home
             if (diceValue !== 6 || allPiecesHome) {
                 const currentIndex = COLORS.indexOf(currentGameData.currentTurn);
-                // Find the next player in the sequence who is actually in the game
                 let nextPlayerIndex = (currentIndex + 1) % COLORS.length;
                 let nextPlayerColor = COLORS[nextPlayerIndex];
-                // Loop until an active player is found
-                while (!currentGameData.players.some(p => p.color === nextPlayerColor)) {
+                while (!playersCopy.some(p => p.color === nextPlayerColor) && nextPlayerIndex !== currentIndex) {
                     nextPlayerIndex = (nextPlayerIndex + 1) % COLORS.length;
                     nextPlayerColor = COLORS[nextPlayerIndex];
                 }
                 updates.currentTurn = nextPlayerColor;
             }
-            updates.diceValue = null; // Reset dice value after move
-            await updateDoc(gameRef, updates); // Commit updates to Firestore
+            updates.diceValue = null; 
+            await updateDoc(gameRef, updates);
         }
         
         async function passTurn() {
@@ -1129,8 +1165,7 @@
             const currentIndex = COLORS.indexOf(currentGameData.currentTurn);
             let nextPlayerIndex = (currentIndex + 1) % COLORS.length;
             let nextPlayerColor = COLORS[nextPlayerIndex];
-            // Loop until an active player is found
-            while (!currentGameData.players.some(p => p.color === nextPlayerColor)) {
+            while (!currentGameData.players.some(p => p.color === nextPlayerColor) && nextPlayerIndex !== currentIndex) {
                 nextPlayerIndex = (nextPlayerIndex + 1) % COLORS.length;
                 nextPlayerColor = COLORS[nextPlayerIndex];
             }
@@ -1141,10 +1176,10 @@
             if (!currentGameId || currentGameData.creatorId !== currentUser.uid) return;
             const gameRef = doc(db, `artifacts/${appId}/public/data/ludoGames`, currentGameId);
             const newPlayers = currentGameData.players.map(p => ({
-                ...p, pieces: Array(4).fill(null).map(() => ({ state: 'base', absolutePosition: -1 })) // Use absolutePosition
+                ...p, pieces: Array(4).fill(null).map(() => ({ state: 'base', absolutePosition: -1 }))
             }));
             await updateDoc(gameRef, {
-                state: 'playing', players: newPlayers, currentTurn: 'red', diceValue: null, winner: null
+                state: 'waiting', players: newPlayers, currentTurn: 'red', diceValue: null, winner: null
             });
             winnerModal.classList.add('hidden');
         }
@@ -1153,33 +1188,44 @@
         createGameBtn.addEventListener('click', createGame);
         joinGameBtn.addEventListener('click', () => {
             const code = gameCodeInput.value.trim();
-            if (code) joinGame(code);
+            if (code) {
+                initialScreenError.textContent = ""; // Clear error
+                joinGame(code);
+            }
             else initialScreenError.textContent = "Please enter a game code.";
         });
         startGameBtn.addEventListener('click', handleStartGame);
-        // rollDiceBtn.addEventListener('click', handleRollDice); // REMOVED
-        diceCube.addEventListener('click', handleRollDice); // NEW: Click on dice to roll
+        rollDiceBtn.addEventListener('click', handleRollDice);
         ludoBoard.addEventListener('click', handlePieceMove);
         playAgainBtn.addEventListener('click', resetGame);
+        
+        // Copy code buttons
         copyCodeBtn.addEventListener('click', () => {
-            // Copy the numerical room code, not the Firestore document ID
             const codeToCopy = currentGameData ? currentGameData.roomCode : '';
             if (codeToCopy) {
-                const tempInput = document.createElement('textarea');
-                tempInput.value = codeToCopy;
-                document.body.appendChild(tempInput);
-                tempInput.select();
-                document.execCommand('copy');
-                document.body.removeChild(tempInput);
-
-                copyCodeBtn.classList.add('bg-green-500/50');
-                setTimeout(() => copyCodeBtn.classList.remove('bg-green-500/50'), 1000);
+                navigator.clipboard.writeText(codeToCopy).then(() => {
+                    copyCodeBtn.classList.add('bg-green-500/50');
+                    setTimeout(() => copyCodeBtn.classList.remove('bg-green-500/50'), 1000);
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                });
+            }
+        });
+        copyCodeWaitingBtn.addEventListener('click', () => {
+            const codeToCopy = currentGameData ? currentGameData.roomCode : '';
+            if (codeToCopy) {
+                navigator.clipboard.writeText(codeToCopy).then(() => {
+                    copyCodeWaitingBtn.classList.add('bg-green-500/50');
+                    setTimeout(() => copyCodeWaitingBtn.classList.remove('bg-green-500/50'), 1000);
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                });
             }
         });
 
         // --- INITIALIZE ---
         buildBoard();
-        console.log("Script loaded successfully and all tags are closed."); // Added for debugging "Unexpected end of input"
+        console.log("Script loaded successfully and all tags are closed.");
     </script>
 </body>
 </html>
