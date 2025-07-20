@@ -128,7 +128,8 @@
             height: 75%;
             border-radius: 50%;
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease; /* THIS IS THE CULPRIT! */
+            /* Removed transform from transition */
+            transition: box-shadow 0.2s ease; 
             position: relative;
             z-index: 10;
             display: flex;
@@ -155,7 +156,7 @@
         .piece.movable {
             outline: 3px dashed var(--color); /* Use outline for visibility without affecting layout */
             outline-offset: 2px; /* Add some space between piece and outline */
-            transition: outline 0.2s ease-in-out; /* Smooth transition for the outline */
+            transition: outline 0.2s ease-in-out, box-shadow 0.2s ease; /* Smooth transition for the outline */
         }
         
         .piece-animating {
@@ -757,6 +758,7 @@
             });
 
             // Update in-game player list (always show all 4 colors, even if not joined)
+            gamePlayerList.innerHTML = ''; // Clear existing
             COLORS.forEach(color => {
                 const player = players.find(p => p.color === color);
                 const div = document.createElement('div');
