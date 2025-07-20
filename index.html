@@ -786,8 +786,12 @@
             
             if (gameData.state === 'waiting') {
                 initialScreen.classList.add('hidden');
+                initialScreen.style.display = 'none';
                 gameScreen.classList.add('hidden');
+                gameScreen.style.display = 'none'; 
+
                 waitingRoomScreen.classList.remove('hidden');
+                waitingRoomScreen.style.display = ''; 
                 waitingRoomGameCode.textContent = gameData.roomCode;
 
                 const isCreator = gameData.creatorId === currentUser.uid;
@@ -796,8 +800,11 @@
                 startGameBtn.textContent = `Start Game (${gameData.players.length}/4 Players)`;
             } else if (gameData.state === 'playing') {
                 waitingRoomScreen.classList.add('hidden');
+                waitingRoomScreen.style.display = 'none';
                 initialScreen.classList.add('hidden');
+                initialScreen.style.display = 'none'; 
                 gameScreen.classList.remove('hidden');
+                gameScreen.style.display = 'none'; 
                 gameCodeDisplay.textContent = gameData.roomCode;
                 
                 // Remove all existing pieces before re-rendering to prevent duplicates
@@ -1377,7 +1384,7 @@
         gameScreen.classList.add('hidden');
         // Ensure the roll dice button is hidden on initial load
         rollDiceBtn.classList.add('hidden'); // ADD THIS LINE
-        rollDiceBtn.style.display = 'none';   // ADD THIS LINE (for robustness)
+        rollDiceBtn.style.display = 'none';   // ADD THIS LINE (for robustness) 
     </script>
 </body>
 </html>
