@@ -94,8 +94,8 @@
                 padding: 0.5rem;
                 align-items: center;
              }
-             /* Hide player info in mobile mode */
-            #playerList, #gamePlayerList {
+             /* Hide player info section (including glass panel) in mobile mode */
+            .player-info-panel { /* New class added to the specific glass panel for player info */
                 display: none;
             }
              .lg\\:order-1 { order: 2; } /* Player list below board - This will be hidden on mobile */
@@ -375,7 +375,7 @@
     <div id="gameScreen" class="hidden w-full h-full">
         <div class="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-4 xl:gap-8 w-full h-full">
             
-            <div class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 order-2 lg:order-1">
+            <div class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 order-2 lg:order-1 player-info-panel">
                 <div class="mb-4">
                     <h3 class="text-xl font-semibold mb-3 text-white">Players:</h3>
                     <div id="gamePlayerList" class="space-y-2">
