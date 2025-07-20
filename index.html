@@ -207,7 +207,7 @@
         
         .piece-animating {
             position: absolute !important;
-            /* transition: top 0.15s linear, left 0.15s linear; */ /* Transition handled by JS animation loop */
+            transition: top 0.15s linear, left 0.15s linear; /* Transition for step-by-step movement */
             z-index: 100;
         }
 
@@ -903,55 +903,34 @@
             pieceEl.classList.add('piece-animating');
             ludoBoard.appendChild(pieceEl); // Move to board container for absolute positioning
 
-            let startCoords;
-            if (startAbsolutePosition === -1) { // From base
+            let currentPathCoords;
+            if (startAbsolutePosition === -1) { // From base to first active position
                 const baseInnerEl = document.querySelector(`#base-inner-${color}`);
-                if (baseInnerEl) {
-                    const baseRect = baseInnerEl.getBoundingClientRect();
-                    startCoords = [
-                        baseRect.top + baseRect.height / 2 - boardRect.top - pieceEl.offsetHeight / 2,
-                        baseRect.left + baseRect.width / 2 - boardRect.left - pieceEl.offsetWidth / 2
-                    ];
-                } else {
-                    console.error("Could not find base inner element for animation start.");
-                    startCoords = [0,0];
-                }
-            } else {
-                const cellEl = getCellElementByAbsolutePosition(color, startAbsolutePosition);
-                if (cellEl) {
-                    const cellRect = cellEl.getBoundingClientRect();
-                    startCoords = [
-                        cellRect.top - boardRect.top,
-                        cellRect.left - boardRect.left
-                    ];
-                } else {
-                    console.error(`Could not find start cell element for animation at absolute position ${startAbsolutePosition}`);
-                    startCoords = [0,0];
-                }
-            }
-            pieceEl.style.top = `${startCoords[0]}px`;
-            pieceEl.style.left = `${startCoords[1]}px`;
+                const baseRect = baseInnerEl.getBoundingClientRect();
+                 currentPathCoords = [
+                    baseRect.top + baseRect.height / 2 - boardRect.top - pieceEl.offsetHeight / 2,
+                    baseRect.left + baseRect.width / 2 - boardRect.left - pieceEl.offsetWidth / 2
+                ];
+                // Set initial position to the center of the base inner element
+                pieceEl.style.top = `${currentPathCoords[0]}px`;
+                pieceEl.style.left = `${currentPathCoords[1]}px`;
+                await new Promise(res => setTimeout(res, 150)); // Small delay for initial placement
+            } 
+            
+            // Determine the actual starting point for the step-by-step animation
+            // If from base, start from 0; otherwise, start from next step after current position
+            const animationStartAbsolutePos = (startAbsolutePosition === -1) ? 0 : startAbsolutePosition + 1;
 
-
-            // Generate path coordinates for animation
-            const pathAbsolutePositions = [];
-            if (startAbsolutePosition === -1) { // Moving from base to first active position
-                pathAbsolutePositions.push(0); // Add the first active cell's absolute position
-            } else {
-                for (let i = startAbsolutePosition + 1; i <= endAbsolutePosition; i++) {
-                    pathAbsolutePositions.push(i);
-                }
-            }
-
-            for (const currentAbsolutePos of pathAbsolutePositions) {
-                const cellEl = getCellElementByAbsolutePosition(color, currentAbsolutePos);
+            for (let i = animationStartAbsolutePos; i <= endAbsolutePosition; i++) {
+                const cellEl = getCellElementByAbsolutePosition(color, i);
                 if (cellEl) {
                     const cellRect = cellEl.getBoundingClientRect();
                     pieceEl.style.top = `${cellRect.top - boardRect.top}px`;
                     pieceEl.style.left = `${cellRect.left - boardRect.left}px`;
                     await new Promise(res => setTimeout(res, 150)); // Delay for animation step
                 } else {
-                    console.error(`Animation ERROR: Cell not found for absolute position ${currentAbsolutePos}`);
+                    console.error(`Animation ERROR: Cell not found for absolute position ${i}`);
+                    break; // Stop animation if a cell is not found
                 }
             }
             
