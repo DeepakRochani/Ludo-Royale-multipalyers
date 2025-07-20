@@ -196,22 +196,77 @@
             background: linear-gradient(145deg, #5a67d8, #7f9cf5);
             border: none;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2), inset 0 -2px 0 rgba(0,0,0,0.2);
+            outline: 2px solid transparent; /* Default outline for animation */
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3), inset 0 -2px 0 rgba(0,0,0,0.2);
+        }
+        .btn-primary:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2), inset 0 -1px 0 rgba(0,0,0,0.1);
         }
         .btn-primary:disabled {
             background: #4a5568;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            outline: none;
+        }
+        
+        /* Button animation on click */
+        .btn-animated:active {
+            animation: button-press 0.2s ease-out;
         }
 
+        @keyframes button-press {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.98); }
+            100% { transform: scale(1); }
+        }
+        
+        .outline-button {
+            position: relative;
+            z-index: 1;
+        }
+
+        .outline-button::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: inherit; /* Inherit border-radius from the button */
+            padding: 2px; /* Adjust padding to control outline thickness */
+            background: linear-gradient(45deg, #a78bfa, #c4b5fd); /* Gradient for outline */
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            z-index: -1;
+            transition: background 0.3s ease;
+        }
+
+        .outline-button:hover::before {
+             background: linear-gradient(45deg, #818cf8, #a78bfa); /* Change gradient on hover */
+        }
+
+        .outline-button:active::before {
+            background: linear-gradient(45deg, #6366f1, #8b5cf6); /* Change gradient on active */
+        }
+        
     </style>
 </head>
-<body class="text-gray-200 flex items-center justify-center min-h-screen p-2 sm:p-4 overflow-auto">
+<body class="text-gray-200 flex items-center justify-center min-h-screen p-2 sm:p-4">
 
     <!-- Initial Screen -->
     <div id="initialScreen" class="w-full max-w-lg p-8 glass-panel text-center">
         <h1 class="text-5xl font-bold mb-4 text-white drop-shadow-lg">Ludo Royale</h1>
         <p class="text-gray-300 mb-8">The ultimate online Ludo challenge</p>
         
-        <button id="createGameBtn" class="w-full text-white font-bold py-4 px-4 rounded-xl text-xl btn-animated btn-primary mb-4 transition-all duration-300 hover:scale-105">
+        <button id="createGameBtn" class="w-full text-white font-bold py-4 px-4 rounded-xl text-xl btn-animated btn-primary outline-button mb-4 transition-all duration-300 hover:scale-105">
             Create New Game
         </button>
         
@@ -223,7 +278,7 @@
 
         <div class="flex flex-col sm:flex-row gap-3">
             <input type="text" id="gameCodeInput" placeholder="Enter Game Code" class="flex-grow bg-gray-800 border-2 border-gray-600 rounded-xl p-4 text-center focus:outline-none focus:border-indigo-500 transition text-lg">
-            <button id="joinGameBtn" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 px-6 rounded-xl btn-animated transition-all duration-300 hover:scale-105">
+            <button id="joinGameBtn" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 px-6 rounded-xl btn-animated outline-button transition-all duration-300 hover:scale-105">
                 Join
             </button>
         </div>
@@ -232,39 +287,28 @@
 
     <!-- Game Screen -->
     <div id="gameScreen" class="hidden w-full h-full">
-        <div class="flex flex-col sm:flex-col lg:flex-row items-stretch justify-center gap-4 xl:gap-8 w-full max-w-screen min-h-screen p-2 overflow-auto">
+        <div class="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-4 xl:gap-8 w-full h-full">
             
-            <!-- Left Panel: Game Info & Players -->
-            <div class="w-full sm:w-full lg:w-72 glass-panel p-4 lg:p-6 order-2 lg:order-1">
-                <h2 class="text-2xl font-bold mb-4 text-white">Game Room</h2>
+            <!-- Left Panel: Only Room Code remains -->
+            <div class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 order-2 lg:order-1">
                 <div class="mb-4">
                     <p class="text-gray-400 text-sm">Room Code:</p>
                     <div class="flex items-center gap-2 mt-1">
                         <span id="gameCodeDisplay" class="text-lg font-mono bg-gray-900/50 px-3 py-1 rounded-lg"></span>
-                        <button id="copyCodeBtn" class="p-2 bg-gray-600/50 hover:bg-gray-500/50 rounded-lg" title="Copy code">
+                        <button id="copyCodeBtn" class="p-2 bg-gray-600/50 hover:bg-gray-500/50 rounded-lg outline-button" title="Copy code">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/></svg>
                         </button>
                     </div>
                 </div>
-                <div class="mb-4">
-                    <p class="text-gray-400 text-sm">Your User ID:</p>
-                    <p id="userIdDisplay" class="text-xs font-mono break-all text-gray-300"></p>
-                </div>
-                <h3 class="text-xl font-semibold mb-3 text-white">Players</h3>
-                <div id="playersList" class="space-y-2"></div>
             </div>
 
             <!-- Center: Ludo Board -->
-            <div id="boardContainer" class="w-full sm:w-full lg:w-auto flex flex-col items-center justify-center order-1 lg:order-2">
+            <div id="boardContainer" class="flex flex-col items-center justify-center order-1 lg:order-2">
                  <div class="ludo-board" id="ludoBoard"></div>
             </div>
 
-            <!-- Right Panel: Controls & Status -->
-            <div class="w-full sm:w-full lg:w-72 glass-panel p-4 lg:p-6 order-3">
-                <h2 class="text-2xl font-bold mb-4 text-white">Status</h2>
-                <div id="statusBox" class="bg-gray-900/50 p-4 rounded-xl text-center mb-4 min-h-[80px] flex items-center justify-center">
-                    <p id="statusMessage" class="text-lg text-yellow-300"></p>
-                </div>
+            <!-- Right Panel: Controls & Dice -->
+            <div class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 order-3">
                 <h3 class="text-xl font-semibold mb-3 text-white">Dice</h3>
                 <div class="flex justify-center items-center mb-4 h-28">
                     <div id="dice" class="dice">
@@ -273,10 +317,13 @@
                         </div>
                     </div>
                 </div>
-                <button id="rollDiceBtn" class="w-full text-white font-bold py-4 px-4 rounded-xl text-xl btn-animated btn-primary transition-all duration-300 hover:scale-105" disabled>
+                <!-- New element to display turn status -->
+                <p id="turnStatusDisplay" class="text-lg text-yellow-300 text-center mb-4 min-h-[40px] flex items-center justify-center"></p>
+
+                <button id="rollDiceBtn" class="w-full text-white font-bold py-4 px-4 rounded-xl text-xl btn-animated btn-primary outline-button transition-all duration-300 hover:scale-105" disabled>
                     Roll Dice
                 </button>
-                <button id="startGameBtn" class="w-full mt-4 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-3 px-4 rounded-xl text-lg btn-animated hidden">
+                <button id="startGameBtn" class="w-full mt-4 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-3 px-4 rounded-xl text-lg btn-animated outline-button hidden">
                     Start Game
                 </button>
             </div>
@@ -288,7 +335,7 @@
         <div class="glass-panel p-8 rounded-2xl shadow-2xl text-center transform transition-all scale-95 animate-fade-in">
             <h2 id="winnerText" class="text-5xl font-bold text-yellow-400 mb-4 drop-shadow-lg"></h2>
             <p class="text-gray-200 text-xl mb-8">is the Ludo Royale Champion!</p>
-            <button id="playAgainBtn" class="text-white font-bold py-3 px-8 rounded-xl text-lg btn-animated btn-primary transition-all duration-300 hover:scale-105">
+            <button id="playAgainBtn" class="text-white font-bold py-3 px-8 rounded-xl text-lg btn-animated btn-primary outline-button transition-all duration-300 hover:scale-105">
                 Play Again
             </button>
         </div>
@@ -332,8 +379,7 @@
         onAuthStateChanged(auth, (user) => {
             console.log("Auth state changed", user);
              if (user) {
-                document.querySelector("#authenticating").style.display = "none";
-                document.querySelector("#join-section").style.display = "block";
+                // No need to update UI elements that are now removed
              }
          });
 
@@ -345,13 +391,14 @@
         const gameCodeInput = document.getElementById('gameCodeInput');
         const gameCodeDisplay = document.getElementById('gameCodeDisplay');
         const copyCodeBtn = document.getElementById('copyCodeBtn');
-        const userIdDisplay = document.getElementById('userIdDisplay');
-        const playersList = document.getElementById('playersList');
+        // Removed: const userIdDisplay = document.getElementById('userIdDisplay');
+        // Removed: const playersList = document.getElementById('playersList');
         const startGameBtn = document.getElementById('startGameBtn');
         const ludoBoard = document.getElementById('ludoBoard');
         const rollDiceBtn = document.getElementById('rollDiceBtn');
         const diceCube = document.getElementById('diceCube');
-        const statusMessage = document.getElementById('statusMessage');
+        // Removed: const statusMessage = document.getElementById('statusMessage');
+        const turnStatusDisplay = document.getElementById('turnStatusDisplay'); // New element for turn status
         const initialScreenError = document.getElementById('initialScreenError');
         const winnerModal = document.getElementById('winner-modal');
         const winnerText = document.getElementById('winnerText');
@@ -466,7 +513,6 @@
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
-                userIdDisplay.textContent = currentUser.uid;
                 setButtonsDisabled(false);
                 initialScreenError.textContent = ""; // Clear any previous auth errors
             } else {
@@ -608,19 +654,8 @@
             // Remove all existing pieces before re-rendering to prevent duplicates
             document.querySelectorAll('.piece').forEach(p => p.remove());
             
-            // Players List
-            playersList.innerHTML = '';
-            gameData.players.forEach(p => {
-                const playerDiv = document.createElement('div');
-                const isTurn = gameData.state === 'playing' && gameData.currentTurn === p.color;
-                playerDiv.className = `flex items-center p-3 rounded-lg transition-all ${isTurn ? 'bg-white/20 scale-105' : 'bg-white/5'}`;
-                playerDiv.innerHTML = `
-                    <div class="w-5 h-5 rounded-full mr-3 border-2 border-white/50" style="background-color: var(--${p.color});"></div>
-                    <span class="font-semibold text-white">${p.color.charAt(0).toUpperCase() + p.color.slice(1)}</span>
-                    ${p.id === currentUser.uid ? '<span class="ml-auto text-xs text-yellow-300 font-semibold">(You)</span>' : ''}
-                `;
-                playersList.appendChild(playerDiv);
-            });
+            // Players List and User ID display are removed from UI.
+            // Logic for pieces and turn still uses gameData.players.
 
             // Pieces
             gameData.players.forEach(player => {
@@ -656,7 +691,7 @@
 
             // Game State UI
             if (gameData.state === 'waiting') {
-                statusMessage.textContent = 'Waiting for players...';
+                turnStatusDisplay.textContent = 'Waiting for players...';
                 const isCreator = gameData.creatorId === currentUser.uid;
                 startGameBtn.classList.toggle('hidden', !(isCreator && gameData.players.length >= 2));
             } else if (gameData.state === 'playing') {
@@ -664,9 +699,9 @@
                 const myColor = gameData.players.find(p => p.id === currentUser.uid)?.color;
                 const isMyTurn = gameData.currentTurn === myColor;
                 
-                statusMessage.innerHTML = `${gameData.currentTurn.charAt(0).toUpperCase() + gameData.currentTurn.slice(1)}'s turn to roll!`;
+                turnStatusDisplay.innerHTML = `${gameData.currentTurn.charAt(0).toUpperCase() + gameData.currentTurn.slice(1)}'s turn to roll!`;
                 if(gameData.diceValue) {
-                    statusMessage.innerHTML = `${gameData.currentTurn.charAt(0).toUpperCase() + gameData.currentTurn.slice(1)} rolled a <strong class="text-2xl text-white">${gameData.diceValue}</strong>. Make a move!`;
+                    turnStatusDisplay.innerHTML = `${gameData.currentTurn.charAt(0).toUpperCase() + gameData.currentTurn.slice(1)} rolled a <strong class="text-2xl text-white">${gameData.diceValue}</strong>. Make a move!`;
                 }
 
                 rollDiceBtn.disabled = !isMyTurn || gameData.diceValue !== null || isAnimating;
@@ -674,6 +709,7 @@
 
             } else if (gameData.state === 'finished') {
                 rollDiceBtn.disabled = true;
+                turnStatusDisplay.textContent = ''; // Clear turn status when game is finished
                 winnerText.textContent = `${gameData.winner.charAt(0).toUpperCase() + gameData.winner.slice(1)}`;
                 winnerModal.classList.remove('hidden');
             }
