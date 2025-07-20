@@ -161,10 +161,11 @@
             z-index: 100;
         }
 
+        /* Modified pulse-glow animation to remove zoom */
         @keyframes pulse-glow {
-            0% { transform: scale(1); box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px var(--color); }
-            50% { transform: scale(1.1); box-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px var(--color); }
-            100% { transform: scale(1); box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px var(--color); }
+            0% { box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px var(--color); }
+            50% { box-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px var(--color); }
+            100% { box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px var(--color); }
         }
 
         .dice { width: 80px; height: 80px; perspective: 1200px; }
