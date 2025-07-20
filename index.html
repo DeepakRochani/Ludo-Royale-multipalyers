@@ -7,45 +7,19 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Sticky Roll Dice Button for Mobile - Removed as dice will be in a scrollable panel */
-        /* Adjusted positioning for center triangles based on 95vmin board size */
-        @media (max-width: 1023px) { /* Adjust breakpoint for larger mobile/tablet view */
-            body {
-                padding: 0.5rem;
+        /* Sticky Roll Dice Button for Mobile - REMOVED, will be handled by fixed panel */
+        /* @media (max-width: 768px) {
+            #rollDiceBtn {
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: calc(100% - 2rem);
+                max-width: 400px;
+                z-index: 100;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.5);
             }
-            #gameScreen {
-                flex-direction: column; /* Stack elements vertically on smaller screens */
-                align-items: center;
-                justify-content: flex-start; /* Align content to start for better scrolling */
-                overflow-y: auto; /* Enable vertical scrolling */
-                padding-bottom: 100px; /* Space for fixed dice/button if needed, though removed for this layout */
-            }
-            #boardContainer {
-                order: 1; /* Board at the top */
-                margin-bottom: 1rem;
-            }
-            .lg\:order-1 { order: 2; } /* Player list below board */
-            .lg\:order-2 { order: 1; } /* Board container */
-            .order-3 { order: 3; } /* Dice panel at the bottom */
-            
-            .glass-panel {
-                width: 100%; /* Full width for panels */
-                max-width: 95vmin; /* Limit max width to board size */
-            }
-            .ludo-board {
-                width: 95vmin;
-                height: 95vmin;
-            }
-
-            /* Ensure dice panel is visible and scrollable */
-            .order-3 {
-                position: relative; /* Make sure it's part of the scroll flow */
-                width: 100%;
-                margin-top: 1rem;
-                margin-bottom: 1rem; /* Add some margin for visual separation */
-            }
-        }
-
+        } */
 
         :root {
             --red: #D83F31;
@@ -59,7 +33,7 @@
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #1f2937, #374151);
-            overflow: auto; /* Changed to auto to allow scrolling on mobile */
+            /* overflow: hidden; */ /* Allow scrolling if content exceeds height, especially on mobile */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -258,7 +232,6 @@
         .outline-button {
             position: relative;
             z-index: 1;
-            overflow: hidden; /* Ensure the gradient doesn't spill out */
         }
 
         .outline-button::before {
@@ -302,6 +275,96 @@
             height: 1rem;
             border-radius: 50%;
             border: 1px solid rgba(0,0,0,0.2);
+        }
+
+        /* Mobile Layout Specifics */
+        @media (max-width: 1023px) { /* Applies to screens smaller than 'lg' breakpoint (1024px) */
+            body {
+                padding: 0; /* Remove padding from body on small screens */
+                justify-content: flex-start; /* Align content to top on mobile */
+                min-height: auto; /* Allow height to be flexible */
+                height: 100vh; /* Make body take full viewport height */
+                overflow-y: auto; /* Allow scrolling if content is too tall */
+            }
+
+            #gameScreen {
+                display: flex;
+                flex-direction: column;
+                height: 100%; /* Take full height of its parent */
+                width: 100%;
+                overflow-y: auto; /* Enable scrolling for the game screen content */
+                padding-bottom: 120px; /* Make space for the fixed bottom panel */
+            }
+
+            #boardContainer {
+                order: 1; /* Board first */
+                flex-grow: 1; /* Allow board to grow and take available space */
+                display: flex; /* Center board */
+                justify-content: center;
+                align-items: center;
+                padding: 1rem; /* Padding around the board */
+            }
+
+            /* Player info panel on top for mobile */
+            #playerInfoPanel {
+                order: 0; /* Player info panel above the board */
+                width: 100%;
+                border-radius: 0; /* Remove border radius for full width */
+                padding: 1rem;
+                background: rgba(31, 41, 55, 0.7); /* Slightly darker background to stand out */
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            }
+
+            /* Fixed bottom panel for dice/controls */
+            #mobileControlsPanel {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                background: rgba(31, 41, 55, 0.9); /* Darker background for visibility */
+                backdrop-filter: blur(10px);
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+                z-index: 50; /* Ensure it's above other content */
+                padding: 1rem;
+                border-radius: 1.5rem 1.5rem 0 0; /* Rounded top corners */
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            /* Hide the original dice panel for mobile, as it's now in mobileControlsPanel */
+            #desktopDicePanel {
+                display: none;
+            }
+        }
+
+        @media (min-width: 1024px) { /* For 'lg' and larger screens */
+            body {
+                overflow: hidden; /* Prevent scrolling on desktop */
+            }
+            #gameScreen {
+                height: 100%;
+                width: 100%;
+                padding-bottom: 0; /* No fixed panel space needed */
+                overflow-y: hidden; /* No scrolling on desktop */
+            }
+            #playerInfoPanel {
+                order: 1; /* Revert order for desktop */
+                width: auto; /* Revert width */
+                border-radius: 1.5rem; /* Revert border radius */
+                background: rgba(31, 41, 55, 0.5); /* Revert background */
+                border: 1px solid rgba(255, 255, 255, 0.1); /* Revert border */
+                box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); /* Revert shadow */
+            }
+            #desktopDicePanel {
+                display: block; /* Show original dice panel on desktop */
+            }
+            #mobileControlsPanel {
+                display: none; /* Hide mobile fixed panel on desktop */
+            }
         }
 
     </style>
@@ -354,46 +417,63 @@
     </div>
 
 
-    <div id="gameScreen" class="hidden w-full h-full flex flex-col lg:flex-row items-center lg:items-start justify-center gap-4 xl:gap-8 p-4">
-        
-        <div class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 order-2 lg:order-1">
-            <div class="mb-4">
-                <p class="text-gray-400 text-sm">Room Code:</p>
-                <div class="flex items-center gap-2 mt-1">
-                    <span id="gameCodeDisplay" class="text-lg font-mono bg-gray-900/50 px-3 py-1 rounded-lg"></span>
-                    <button id="copyCodeBtn" class="p-2 bg-gray-600/50 hover:bg-gray-500/50 rounded-lg outline-button" title="Copy code">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/></svg>
-                    </button>
-                </div>
-            </div>
-            <div class="mb-4">
-                <h3 class="text-xl font-semibold mb-3 text-white">Players:</h3>
-                <div id="gamePlayerList" class="space-y-2">
-                    </div>
-            </div>
-        </div>
-
-        <div id="boardContainer" class="flex flex-col items-center justify-center order-1 lg:order-2">
-             <div class="ludo-board" id="ludoBoard"></div>
-        </div>
-
-        <div class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 order-3">
-            <h3 class="text-xl font-semibold mb-3 text-white">Dice</h3>
-            <div class="flex justify-center items-center mb-4 h-28">
-                <div id="dice" class="dice">
-                    <div class="dice-cube" id="diceCube">
-                        <div class="dice-face face-1">1</div><div class="dice-face face-2">2</div><div class="dice-face face-3">3</div><div class="dice-face face-4">4</div><div class="dice-face face-5">5</div><div class="dice-face face-6">6</div>
+    <div id="gameScreen" class="hidden w-full h-full">
+        <div class="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-4 xl:gap-8 w-full h-full">
+            
+            <div id="playerInfoPanel" class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6">
+                <div class="mb-4">
+                    <p class="text-gray-400 text-sm">Room Code:</p>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span id="gameCodeDisplay" class="text-lg font-mono bg-gray-900/50 px-3 py-1 rounded-lg"></span>
+                        <button id="copyCodeBtn" class="p-2 bg-gray-600/50 hover:bg-gray-500/50 rounded-lg outline-button" title="Copy code">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/></svg>
+                        </button>
                     </div>
                 </div>
+                <div class="mb-4">
+                    <h3 class="text-xl font-semibold mb-3 text-white">Players:</h3>
+                    <div id="gamePlayerList" class="space-y-2">
+                        </div>
+                </div>
             </div>
-            <p id="turnStatusDisplay" class="text-lg text-yellow-300 text-center mb-4 min-h-[40px] flex items-center justify-center"></p>
 
-            <button id="rollDiceBtn" class="w-full text-white font-bold py-4 px-4 rounded-xl text-xl btn-animated btn-primary outline-button transition-all duration-300 hover:scale-105" disabled>
-                Roll Dice
-            </button>
+            <div id="boardContainer" class="flex flex-col items-center justify-center">
+                 <div class="ludo-board" id="ludoBoard"></div>
+            </div>
+
+            <div id="desktopDicePanel" class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6">
+                <h3 class="text-xl font-semibold mb-3 text-white">Dice</h3>
+                <div class="flex justify-center items-center mb-4 h-28">
+                    <div id="dice" class="dice">
+                        <div class="dice-cube" id="diceCube">
+                            <div class="dice-face face-1">1</div><div class="dice-face face-2">2</div><div class="dice-face face-3">3</div><div class="dice-face face-4">4</div><div class="dice-face face-5">5</div><div class="dice-face face-6">6</div>
+                        </div>
+                    </div>
+                </div>
+                <p id="turnStatusDisplay" class="text-lg text-yellow-300 text-center mb-4 min-h-[40px] flex items-center justify-center"></p>
+
+                <button id="rollDiceBtn" class="w-full text-white font-bold py-4 px-4 rounded-xl text-xl btn-animated btn-primary outline-button transition-all duration-300 hover:scale-105" disabled>
+                    Roll Dice
+                </button>
+            </div>
         </div>
     </div>
     
+    <div id="mobileControlsPanel" class="hidden"> <h3 class="text-xl font-semibold mb-3 text-white">Dice</h3>
+        <div class="flex justify-center items-center mb-4 h-28">
+            <div id="diceMobile" class="dice">
+                <div class="dice-cube" id="diceCubeMobile">
+                    <div class="dice-face face-1">1</div><div class="dice-face face-2">2</div><div class="dice-face face-3">3</div><div class="dice-face face-4">4</div><div class="dice-face face-5">5</div><div class="dice-face face-6">6</div>
+                </div>
+            </div>
+        </div>
+        <p id="turnStatusDisplayMobile" class="text-lg text-yellow-300 text-center mb-4 min-h-[40px] flex items-center justify-center"></p>
+
+        <button id="rollDiceBtnMobile" class="w-full text-white font-bold py-4 px-4 rounded-xl text-xl btn-animated btn-primary outline-button transition-all duration-300 hover:scale-105" disabled>
+            Roll Dice
+        </button>
+    </div>
+
     <div id="winner-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
         <div class="glass-panel p-8 rounded-2xl shadow-2xl text-center transform transition-all scale-95 animate-fade-in">
             <h2 id="winnerText" class="text-5xl font-bold text-yellow-400 mb-4 drop-shadow-lg"></h2>
@@ -458,9 +538,17 @@
         const copyCodeWaitingBtn = document.getElementById('copyCodeWaitingBtn'); // Waiting room copy
         const startGameBtn = document.getElementById('startGameBtn');
         const ludoBoard = document.getElementById('ludoBoard');
+        
+        // Desktop Dice Controls
         const rollDiceBtn = document.getElementById('rollDiceBtn');
         const diceCube = document.getElementById('diceCube');
         const turnStatusDisplay = document.getElementById('turnStatusDisplay');
+
+        // Mobile Dice Controls
+        const rollDiceBtnMobile = document.getElementById('rollDiceBtnMobile');
+        const diceCubeMobile = document.getElementById('diceCubeMobile');
+        const turnStatusDisplayMobile = document.getElementById('turnStatusDisplayMobile');
+
         const initialScreenError = document.getElementById('initialScreenError');
         const winnerModal = document.getElementById('winner-modal');
         const winnerText = document.getElementById('winnerText');
@@ -743,26 +831,37 @@
                 const myColor = gameData.players.find(p => p.id === currentUser.uid)?.color;
                 const isMyTurn = gameData.currentTurn === myColor;
                 
-                turnStatusDisplay.innerHTML = `${gameData.currentTurn.charAt(0).toUpperCase() + gameData.currentTurn.slice(1)}'s turn to roll!`;
+                const turnMessage = `${gameData.currentTurn.charAt(0).toUpperCase() + gameData.currentTurn.slice(1)}'s turn to roll!`;
                 if(gameData.diceValue) {
-                    turnStatusDisplay.innerHTML = `${gameData.currentTurn.charAt(0).toUpperCase() + gameData.currentTurn.slice(1)} rolled a <strong class="text-2xl text-white">${gameData.diceValue}</strong>. Make a move!`;
-                    // Update dice cube display immediately after a roll
+                    const rolledMessage = `${gameData.currentTurn.charAt(0).toUpperCase() + gameData.currentTurn.slice(1)} rolled a <strong class="text-2xl text-white">${gameData.diceValue}</strong>. Make a move!`;
+                    turnStatusDisplay.innerHTML = rolledMessage;
+                    turnStatusDisplayMobile.innerHTML = rolledMessage;
+                } else {
+                    turnStatusDisplay.innerHTML = turnMessage;
+                    turnStatusDisplayMobile.innerHTML = turnMessage;
+                }
+
+                // Update both desktop and mobile roll dice buttons
+                rollDiceBtn.disabled = !isMyTurn || gameData.diceValue !== null || isAnimating;
+                rollDiceBtnMobile.disabled = !isMyTurn || gameData.diceValue !== null || isAnimating;
+
+                updateMovablePieces(isMyTurn, gameData.diceValue);
+
+                // Update both desktop and mobile dice display
+                if (gameData.diceValue) {
                     const rotations = {
                         1: 'rotateY(0deg)', 2: 'rotateY(-90deg)', 3: 'rotateY(-180deg)',
                         4: 'rotateY(90deg)', 5: 'rotateX(-90deg)', 6: 'rotateX(90deg)'
                     };
                     diceCube.style.transform = rotations[gameData.diceValue];
-                } else {
-                    // Reset dice orientation when no value is rolled yet
-                    diceCube.style.transform = 'none'; // Or set to a default face, e.g., 'rotateY(0deg)' for 1
+                    diceCubeMobile.style.transform = rotations[gameData.diceValue];
                 }
-
-                rollDiceBtn.disabled = !isMyTurn || gameData.diceValue !== null || isAnimating;
-                updateMovablePieces(isMyTurn, gameData.diceValue);
 
             } else if (gameData.state === 'finished') {
                 rollDiceBtn.disabled = true;
+                rollDiceBtnMobile.disabled = true;
                 turnStatusDisplay.textContent = ''; 
+                turnStatusDisplayMobile.textContent = '';
                 winnerText.textContent = `${gameData.winner.charAt(0).toUpperCase() + gameData.winner.slice(1)}`;
                 winnerModal.classList.remove('hidden');
             }
@@ -872,6 +971,7 @@
         async function animatePieceMove(pieceEl, color, startAbsolutePosition, endAbsolutePosition) {
             isAnimating = true;
             rollDiceBtn.disabled = true;
+            rollDiceBtnMobile.disabled = true; // Disable mobile button too
             document.querySelectorAll('.piece.movable').forEach(p => p.classList.remove('movable'));
 
             const boardRect = ludoBoard.getBoundingClientRect();
@@ -884,27 +984,25 @@
                 const baseInnerEl = document.querySelector(`#base-inner-${color}`);
                 if (baseInnerEl) {
                     const baseRect = baseInnerEl.getBoundingClientRect();
-                    // Center of the base inner cell
                     startCoords = [
                         baseRect.top + baseRect.height / 2 - boardRect.top - pieceEl.offsetHeight / 2,
                         baseRect.left + baseRect.width / 2 - boardRect.left - pieceEl.offsetWidth / 2
                     ];
                 } else {
                     console.error("Could not find base inner element for animation start.");
-                    startCoords = [0,0]; // Fallback
+                    startCoords = [0,0];
                 }
             } else {
                 const cellEl = getCellElementByAbsolutePosition(color, startAbsolutePosition);
                 if (cellEl) {
                     const cellRect = cellEl.getBoundingClientRect();
-                    // Center of the cell
                     startCoords = [
                         cellRect.top - boardRect.top,
                         cellRect.left - boardRect.left
                     ];
                 } else {
                     console.error(`Could not find start cell element for animation at absolute position ${startAbsolutePosition}`);
-                    startCoords = [0,0]; // Fallback
+                    startCoords = [0,0];
                 }
             }
             pieceEl.style.top = `${startCoords[0]}px`;
@@ -925,32 +1023,17 @@
                 const cellEl = getCellElementByAbsolutePosition(color, currentAbsolutePos);
                 if (cellEl) {
                     const cellRect = cellEl.getBoundingClientRect();
-                    // Center of the cell
-                    const targetTop = cellRect.top - boardRect.top;
-                    const targetLeft = cellRect.left - boardRect.left;
-
-                    // Smooth transition for each step
-                    pieceEl.style.transition = 'top 0.15s linear, left 0.15s linear';
-                    pieceEl.style.top = `${targetTop}px`;
-                    pieceEl.style.left = `${targetLeft}px`;
+                    pieceEl.style.top = `${cellRect.top - boardRect.top}px`;
+                    pieceEl.style.left = `${cellRect.left - boardRect.left}px`;
                     await new Promise(res => setTimeout(res, 150)); // Delay for animation step
                 } else {
                     console.error(`Animation ERROR: Cell not found for absolute position ${currentAbsolutePos}`);
                 }
             }
             
-            // Remove animation specific styles after completion
             pieceEl.classList.remove('piece-animating');
-            pieceEl.style.transition = ''; // Remove transition for normal placement
-            // Re-append piece to its correct final cell for proper static rendering
-            const finalTargetCell = getCellElementByAbsolutePosition(color, endAbsolutePosition);
-            if (finalTargetCell) {
-                finalTargetCell.appendChild(pieceEl);
-                pieceEl.style.top = ''; // Clear absolute positioning
-                pieceEl.style.left = ''; // Clear absolute positioning
-            } else {
-                console.error("Failed to re-append piece to final target cell after animation.");
-            }
+            pieceEl.style.top = '';
+            pieceEl.style.left = '';
             
             isAnimating = false;
         }
@@ -975,8 +1058,7 @@
                         return document.querySelector(`.cell[data-type='path'][data-index='${mainPathIndex}']`);
                     }
                 } else { // Home path
-                    // Home path indices are relative to their own path (0-5)
-                    const homePathIndex = absolutePosition - 52; 
+                    const homePathIndex = absolutePosition - 52;
                     return document.querySelector(`.cell[data-type='home-${color}'][data-index='${homePathIndex}']`);
                 }
             }
@@ -1101,22 +1183,24 @@
         }
 
         async function handleRollDice() {
-            if (rollDiceBtn.disabled) return;
+            // Check both desktop and mobile buttons
+            if (rollDiceBtn.disabled && rollDiceBtnMobile.disabled) return; 
+
             const diceResult = Math.floor(Math.random() * 6) + 1;
             
             const rotations = {
-                1: 'rotateY(0deg)', 2: 'rotateY(90deg)', 3: 'rotateY(180deg)',
-                4: 'rotateY(-90deg)', 5: 'rotateX(90deg)', 6: 'rotateX(-90deg)' // Corrected rotations for 3D dice
+                1: 'rotateY(0deg)', 2: 'rotateY(-90deg)', 3: 'rotateY(-180deg)',
+                4: 'rotateY(90deg)', 5: 'rotateX(-90deg)', 6: 'rotateX(90deg)'
             };
+            // Apply rotation to both dice cubes
+            diceCube.style.transform = `rotateX(${Math.random()*1440+720}deg) rotateY(${Math.random()*1440+720}deg)`;
+            diceCubeMobile.style.transform = `rotateX(${Math.random()*1440+720}deg) rotateY(${Math.random()*1440+720}deg)`;
             
-            // Apply a random spin before setting the final face
-            diceCube.style.transition = 'transform 0.5s ease-out'; // Faster initial spin
-            diceCube.style.transform = `rotateX(${Math.random()*720 + 360}deg) rotateY(${Math.random()*720 + 360}deg) rotateZ(${Math.random()*720 + 360}deg)`;
-
             setTimeout(async () => {
-                diceCube.style.transition = 'transform 1.5s cubic-bezier(0.45, 0, 0.55, 1)'; // Smooth transition for final face
+                // Apply final face rotation to both dice cubes
                 diceCube.style.transform = rotations[diceResult];
-                
+                diceCubeMobile.style.transform = rotations[diceResult];
+
                 const gameRef = doc(db, `artifacts/${appId}/public/data/ludoGames`, currentGameId);
                 
                 const myColor = currentGameData.currentTurn;
@@ -1127,9 +1211,9 @@
                 await updateDoc(gameRef, { diceValue: diceResult });
 
                 if (!hasValidMoves) {
-                    setTimeout(() => passTurn(), 2000); // Give user time to see dice result before passing
+                    setTimeout(() => passTurn(), 1500);
                 }
-            }, 500); // Short delay before setting final dice face for a "roll" effect
+            }, 1500);
         }
         
         async function handlePieceMove(e) {
@@ -1161,13 +1245,12 @@
 
             const startAbsolutePosition = pieceToMove.absolutePosition;
 
-            // Perform animation first
-            await animatePieceMove(pieceEl, color, startAbsolutePosition, newAbsolutePosition);
-
-            // Update piece data in the copy after animation completes
+            // Update local piece data
             pieceToMove.state = newPieceState;
             pieceToMove.absolutePosition = newAbsolutePosition;
             
+            await animatePieceMove(pieceEl, color, startAbsolutePosition, newAbsolutePosition);
+
             const gameRef = doc(db, `artifacts/${appId}/public/data/ludoGames`, currentGameId);
             const updates = { players: playersCopy };
 
@@ -1204,12 +1287,10 @@
                 updates.state = 'finished';
             }
 
-            // Determine next turn
-            if (diceValue !== 6 || allPiecesHome) { // If not a 6 or game finished, pass turn
+            if (diceValue !== 6 || allPiecesHome) {
                 const currentIndex = COLORS.indexOf(currentGameData.currentTurn);
                 let nextPlayerIndex = (currentIndex + 1) % COLORS.length;
                 let nextPlayerColor = COLORS[nextPlayerIndex];
-                // Skip players who are not in the game
                 while (!playersCopy.some(p => p.color === nextPlayerColor) && nextPlayerIndex !== currentIndex) {
                     nextPlayerIndex = (nextPlayerIndex + 1) % COLORS.length;
                     nextPlayerColor = COLORS[nextPlayerIndex];
@@ -1255,7 +1336,11 @@
             else initialScreenError.textContent = "Please enter a game code.";
         });
         startGameBtn.addEventListener('click', handleStartGame);
+
+        // Attach event listener to both desktop and mobile roll dice buttons
         rollDiceBtn.addEventListener('click', handleRollDice);
+        rollDiceBtnMobile.addEventListener('click', handleRollDice);
+
         ludoBoard.addEventListener('click', handlePieceMove);
         playAgainBtn.addEventListener('click', resetGame);
         
