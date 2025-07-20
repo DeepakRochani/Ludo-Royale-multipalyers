@@ -207,9 +207,21 @@
         
         .piece-animating {
             position: absolute !important;
+            /* Calculate piece size relative to board: 95vmin (board) / 15 (cells) * 0.75 (piece size within cell) */
+            width: calc(95vmin / 15 * 0.75);
+            height: calc(95vmin / 15 * 0.75);
             transition: top 0.15s linear, left 0.15s linear; /* Transition for step-by-step movement */
             z-index: 100;
         }
+        /* Override mobile responsiveness for piece size when animating to use vmin consistently */
+        @media (max-width: 768px) {
+            .piece-animating {
+                /* Use 100vw for board size on mobile to calculate piece size */
+                width: calc(100vw / 15 * 0.75);
+                height: calc(100vw / 15 * 0.75);
+            }
+        }
+
 
         @keyframes pulse-glow {
             0% { transform: scale(1); box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px var(--color); }
@@ -356,7 +368,7 @@
         <div class="flex items-center justify-center gap-4 mb-8">
             <span id="waitingRoomGameCode" class="text-4xl font-mono bg-gray-900/50 px-5 py-2 rounded-xl text-indigo-300 tracking-wider"></span>
             <button id="copyCodeWaitingBtn" class="p-3 bg-gray-600/50 hover:bg-gray-500/50 rounded-xl outline-button" title="Copy code">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M4 1.5H3a2 0 0 0-2 2V14a2 0 0 0 2 2h10a2 0 0 0 2-2V3.5a2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/></svg>
             </button>
         </div>
 
