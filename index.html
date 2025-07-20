@@ -7,78 +7,18 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Sticky Roll Dice Button for Mobile */
+        /* Sticky Roll Dice Button for Mobile - ADJUSTED */
         @media (max-width: 768px) {
+            /* Remove position fixed to keep it in flow */
             #rollDiceBtn {
-                position: fixed;
-                bottom: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: calc(100% - 2rem);
-                max-width: 400px;
-                z-index: 100;
-                box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            }
-            /* Hide the player info panel by default on mobile */
-            #playerInfoPanel {
-                display: none; /* Default hidden on mobile */
-                position: fixed; /* Make it fixed so it overlays */
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(31, 41, 55, 0.9); /* Darker overlay for focus */
-                backdrop-filter: blur(15px);
-                z-index: 101; /* Above dice button and board */
-                padding-top: 5rem; /* Space for the close button */
-                overflow-y: auto; /* Enable scrolling if content overflows */
-            }
-            /* Show player info panel when 'active' class is added */
-            #playerInfoPanel.active {
-                display: block;
-            }
-            #diceControlPanel {
-                width: calc(100% - 2rem); /* Full width on mobile */
-                max-width: none;
-                position: fixed;
-                bottom: 80px; /* Position above the roll dice button */
-                left: 50%;
-                transform: translateX(-50%);
-                z-index: 99; /* Below the player info panel if opened */
-            }
-            #togglePlayerInfoBtn {
-                display: block; /* Show toggle button on mobile */
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                z-index: 102; /* Above everything */
-            }
-        }
-
-        /* Desktop adjustments for playerInfoPanel and diceControlPanel positioning */
-        @media (min-width: 769px) {
-            #playerInfoPanel {
-                display: block !important; /* Always show on desktop */
-                position: static;
-                width: initial;
-                height: initial;
-                background: rgba(31, 41, 55, 0.5); /* Reset glass panel background */
-                backdrop-filter: blur(10px);
-                z-index: auto;
-                padding-top: initial;
-                overflow-y: initial;
-            }
-            #diceControlPanel {
-                position: static;
+                position: relative; /* Changed from fixed to relative */
+                bottom: auto;
+                left: auto;
                 transform: none;
-                width: initial;
-                max-width: initial;
-                bottom: initial;
-                left: initial;
+                width: 100%; /* Ensure it takes full width in its container */
+                max-width: none;
                 z-index: auto;
-            }
-            #togglePlayerInfoBtn {
-                display: none; /* Hide toggle button on desktop */
+                box-shadow: none; /* Reset box-shadow if not fixed */
             }
         }
 
@@ -94,12 +34,13 @@
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #1f2937, #374151);
-            overflow: hidden;
+            /* overflow: hidden; */ /* Removed to allow scrolling if content overflows */
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 100vh; /* Changed to 100vh for full view on all devices */
+            min-height: 100vh; /* Changed from 10vh to 100vh for full viewport height */
             padding: 1rem;
+            box-sizing: border-box; /* Ensures padding is included in height */
         }
 
         .glass-panel {
@@ -383,10 +324,10 @@
     </div>
 
 
-    <div id="gameScreen" class="hidden w-full h-full">
-        <div class="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-4 xl:gap-8 w-full h-full">
+    <div id="gameScreen" class="hidden w-full h-full flex items-center justify-center">
+        <div class="main-content-wrapper flex flex-col lg:flex-row items-center lg:items-start justify-center gap-4 xl:gap-8 w-full max-w-screen-xl mx-auto">
             
-            <div id="playerInfoPanel" class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 order-2 lg:order-1">
+            <div class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 order-2 lg:order-1 flex-shrink-0">
                 <div class="mb-4">
                     <p class="text-gray-400 text-sm">Room Code:</p>
                     <div class="flex items-center gap-2 mt-1">
@@ -401,18 +342,13 @@
                     <div id="gamePlayerList" class="space-y-2">
                         </div>
                 </div>
-                <button id="closePlayerInfoBtn" class="absolute top-4 right-4 text-white text-2xl lg:hidden">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
-                    </svg>
-                </button>
             </div>
 
-            <div id="boardContainer" class="flex flex-col items-center justify-center order-1 lg:order-2">
+            <div id="boardContainer" class="flex flex-col items-center justify-center order-1 lg:order-2 flex-grow">
                  <div class="ludo-board" id="ludoBoard"></div>
             </div>
 
-            <div id="diceControlPanel" class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 order-3">
+            <div class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 order-3 flex-shrink-0">
                 <h3 class="text-xl font-semibold mb-3 text-white">Dice</h3>
                 <div class="flex justify-center items-center mb-4 h-28">
                     <div id="dice" class="dice">
@@ -427,12 +363,6 @@
                     Roll Dice
                 </button>
             </div>
-            
-            <button id="togglePlayerInfoBtn" class="p-3 bg-indigo-600/50 hover:bg-indigo-500/50 rounded-full btn-animated outline-button hidden">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M1 11.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5z"/>
-                </svg>
-            </button>
         </div>
     </div>
     
@@ -459,7 +389,7 @@
             authDomain: "app-store-87d8a.firebaseapp.com",
             databaseURL: "https://app-store-87d8a-default-rtdb.firebaseio.com",
             projectId: "app-store-87d8a", 
-            storageBucket: "app-store-87d8a.firebasestorage.app",
+            storageBucket: "app-store-87d8a.firebaseusercontent.com",
             messagingSenderId: "404049348425",
             appId: "1:404049348425:web:2b11e8c35f4b1553c1fc98" 
         };
@@ -510,12 +440,6 @@
         const initialScreenButtons = [createGameBtn, joinGameBtn];
         const playerList = document.getElementById('playerList'); // Player list in waiting room
         const gamePlayerList = document.getElementById('gamePlayerList'); // Player list in game screen
-        
-        // New DOM elements for mobile view
-        const playerInfoPanel = document.getElementById('playerInfoPanel');
-        const togglePlayerInfoBtn = document.getElementById('togglePlayerInfoBtn');
-        const closePlayerInfoBtn = document.getElementById('closePlayerInfoBtn');
-
 
         // --- GAME STATE ---
         let currentUser = null;
@@ -751,7 +675,6 @@
                 waitingRoomGameCode.textContent = gameData.roomCode;
 
                 const isCreator = gameData.creatorId === currentUser.uid;
-                // 'Start Game' button logic: visible only for creator, enabled if 2+ players
                 startGameBtn.classList.toggle('hidden', !isCreator);
                 startGameBtn.disabled = !(isCreator && gameData.players.length >= 2);
                 startGameBtn.textContent = `Start Game (${gameData.players.length}/4 Players)`;
@@ -843,7 +766,7 @@
                         playerStatus += ` - Home: ${piecesHomeCount}/4`;
                     }
                 } else {
-                    playerName = `${color.charAt(0).toUpperCase() + color.slice(1)} (Empty)`; // Corrected `color.color.slice(1)` to `color.slice(1)`
+                    playerName = `${color.charAt(0).toUpperCase() + color.slice(1)} (Empty)`;
                     div.classList.add('opacity-50');
                 }
 
@@ -1113,24 +1036,13 @@
         }
 
         async function handleStartGame() {
-            if (!currentGameId || currentGameData.creatorId !== currentUser.uid) {
-                console.warn("Attempted to start game without being creator or without game ID.");
-                return;
-            }
+            if (!currentGameId || currentGameData.creatorId !== currentUser.uid) return;
             // Ensure there are at least 2 players to start
             if (currentGameData.players.length < 2) {
                 console.warn("Cannot start game: Less than 2 players.");
-                // Potentially provide user feedback here if not already done by disabled state
                 return;
             }
-            try {
-                await updateDoc(doc(db, `artifacts/${appId}/public/data/ludoGames`, currentGameId), { state: 'playing' });
-                console.log("Game state updated to 'playing'.");
-            } catch (error) {
-                console.error("Error updating game state to 'playing':", error);
-                // Provide user feedback if the update fails (e.g., due to permissions)
-                alert("Failed to start game. Please check console for errors or refresh the page.");
-            }
+            await updateDoc(doc(db, `artifacts/${appId}/public/data/ludoGames`, currentGameId), { state: 'playing' });
         }
 
         async function handleRollDice() {
@@ -1280,8 +1192,8 @@
             else initialScreenError.textContent = "Please enter a game code.";
         });
         startGameBtn.addEventListener('click', handleStartGame);
+        rollDiceBtn.addEventListener('click', handleRollDice);
         ludoBoard.addEventListener('click', handlePieceMove);
-        rollDiceBtn.addEventListener('click', handleRollDice); // Ensure this is active
         playAgainBtn.addEventListener('click', resetGame);
         
         // Copy code buttons
@@ -1306,15 +1218,6 @@
                     console.error('Failed to copy text: ', err);
                 });
             }
-        });
-
-        // Mobile Player Info Panel Toggle
-        togglePlayerInfoBtn.addEventListener('click', () => {
-            playerInfoPanel.classList.add('active');
-        });
-
-        closePlayerInfoBtn.addEventListener('click', () => {
-            playerInfoPanel.classList.remove('active');
         });
 
         // --- INITIALIZE ---
