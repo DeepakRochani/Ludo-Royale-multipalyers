@@ -7,8 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Sticky Roll Dice Button for Mobile - Removed as per request */
-        /* @media (max-width: 768px) {
+        /* Sticky Roll Dice Button for Mobile */
+        @media (max-width: 768px) {
             #rollDiceBtn {
                 position: fixed;
                 bottom: 20px;
@@ -19,7 +19,7 @@
                 z-index: 100;
                 box-shadow: 0 4px 20px rgba(0,0,0,0.5);
             }
-        } */
+        }
 
         :root {
             --red: #D83F31;
@@ -37,7 +37,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
+            min-height: 10vh; /* Reduced height to ensure content fits within typical browser viewports for demonstration */
             padding: 1rem;
         }
 
@@ -63,51 +63,6 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
             position: relative;
         }
-
-        /* Responsive adjustments for the board */
-        @media (max-width: 768px) {
-            body {
-                padding: 0.5rem;
-            }
-            .ludo-board {
-                width: 100vw; /* Occupy full viewport width */
-                height: 100vw; /* Maintain aspect ratio */
-                max-width: 90vh; /* Limit for landscape on taller phones */
-                max-height: 90vh; /* Limit for portrait on wider phones */
-                border-width: 3px; /* Smaller border on mobile */
-            }
-             .glass-panel {
-                padding: 1rem;
-             }
-             /* Adjust board container to allow it to grow on mobile */
-             #boardContainer {
-                flex-grow: 1;
-                width: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-             }
-             .flex-col.lg\\:flex-row {
-                flex-direction: column;
-                justify-content: flex-start; /* Align content to top for better scrolling if needed */
-                overflow-y: auto; /* Allow scrolling if content overflows */
-                padding: 0.5rem;
-                align-items: center;
-             }
-             /* Hide player info section (including glass panel) in mobile mode */
-            .player-info-panel { /* New class added to the specific glass panel for player info */
-                display: none;
-            }
-             .lg\\:order-1 { order: 2; } /* Player list below board - This will be hidden on mobile */
-             .lg\\:order-2 { order: 1; } /* Board on top */
-             .order-3 { order: 3; } /* Dice panel at the bottom */
-        }
-        @media (min-width: 769px) {
-             .flex-col.lg\\:flex-row {
-                align-items: flex-start;
-             }
-        }
-
 
         .cell {
             display: flex;
@@ -139,44 +94,33 @@
             justify-content: center;
             align-items: center;
             background-color: var(--board-dark);
-            position: relative; /* Ensure absolute children are relative to this */
+            overflow: hidden; /* Hide overflow to prevent triangles from going outside */
+            position: relative; /* Essential for positioning inner triangles */
         }
-
-        .center-triangle { 
+        .center-triangle {
+            width: 0; 
+            height: 0; 
+            border-style: solid;
             position: absolute; 
-            /* Common values for triangle size. Each triangle occupies 1.5x1.5 cells worth of space */
-            --tri-dim: calc(95vmin / 15 * 1.5);
-            width: var(--tri-dim);
-            height: var(--tri-dim);
+            /* Base size for triangles, adjusted to fit the 3x3 grid area */
+            border-width: calc(95vmin / 15 * 1.5) calc(95vmin / 15 * 1.5) calc(95vmin / 15 * 1.5);
         }
-
-        /* Yellow triangle (Top-Left quadrant, points bottom-right to center) */
-        .center-triangle-yellow { 
-            background-color: var(--yellow);
-            top: 0; 
-            left: 0; 
-            clip-path: polygon(0% 0%, 100% 0%, 0% 100%);
-        }
-        /* Green triangle (Top-Right quadrant, points bottom-left to center) */
-        .center-triangle-green { 
-            background-color: var(--green);
-            top: 0; 
-            left: var(--tri-dim); 
-            clip-path: polygon(0% 0%, 100% 0%, 100% 100%);
-        }
-        /* Red triangle (Bottom-Left quadrant, points top-right to center) */
+        /* Adjusted positioning for center triangles based on 95vmin board size */
         .center-triangle-red { 
-            background-color: var(--red);
-            top: var(--tri-dim); 
-            left: 0; 
-            clip-path: polygon(0% 100%, 100% 100%, 100% 0%);
+            border-color: transparent transparent var(--red) transparent; 
+            transform: translateY(calc(95vmin / 15 * 0.5)); /* Move down */
         }
-        /* Blue triangle (Bottom-Right quadrant, points top-left to center) */
+        .center-triangle-green { 
+            border-color: transparent transparent var(--green) transparent; 
+            transform: translateY(calc(-95vmin / 15 * 0.5)) rotate(180deg); /* Move up, rotate 180 */
+        }
+        .center-triangle-yellow { 
+            border-color: transparent transparent var(--yellow) transparent; 
+            transform: translateX(calc(-95vmin / 15 * 0.5)) rotate(90deg); /* Move left, rotate 90 */
+        }
         .center-triangle-blue { 
-            background-color: var(--blue);
-            top: var(--tri-dim); 
-            left: var(--tri-dim); 
-            clip-path: polygon(0% 0%, 100% 100%, 0% 100%);
+            border-color: transparent transparent var(--blue) transparent; 
+            transform: translateX(calc(95vmin / 15 * 0.5)) rotate(-90deg); /* Move right, rotate -90 */
         }
 
         .piece {
@@ -213,21 +157,9 @@
         
         .piece-animating {
             position: absolute !important;
-            /* Calculate piece size relative to board: 95vmin (board) / 15 (cells) * 0.75 (piece size within cell) */
-            width: calc(95vmin / 15 * 0.75);
-            height: calc(95vmin / 15 * 0.75);
-            transition: top 0.15s linear, left 0.15s linear; /* Transition for step-by-step movement */
+            /* transition: top 0.15s linear, left 0.15s linear; */ /* Transition handled by JS animation loop */
             z-index: 100;
         }
-        /* Override mobile responsiveness for piece size when animating to use vmin consistently */
-        @media (max-width: 768px) {
-            .piece-animating {
-                /* Use 100vw for board size on mobile to calculate piece size */
-                width: calc(100vw / 15 * 0.75);
-                height: calc(100vw / 15 * 0.75);
-            }
-        }
-
 
         @keyframes pulse-glow {
             0% { transform: scale(1); box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px var(--color); }
@@ -235,7 +167,7 @@
             100% { transform: scale(1); box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px var(--color); }
         }
 
-        .dice { width: 80px; height: 80px; perspective: 1200px; cursor: pointer; } /* Added cursor: pointer */
+        .dice { width: 80px; height: 80px; perspective: 1200px; }
         .dice-cube { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 1.5s cubic-bezier(0.45, 0, 0.55, 1); }
         .dice-face {
             position: absolute;
@@ -320,7 +252,7 @@
         }
 
         .outline-button:active::before {
-            background: linear: linear-gradient(45deg, #6366f1, #8b5cf6); /* Change gradient on active */
+            background: linear-gradient(45deg, #6366f1, #8b5cf6); /* Change gradient on active */
         }
         
         /* Waiting room specific styles */
@@ -374,7 +306,7 @@
         <div class="flex items-center justify-center gap-4 mb-8">
             <span id="waitingRoomGameCode" class="text-4xl font-mono bg-gray-900/50 px-5 py-2 rounded-xl text-indigo-300 tracking-wider"></span>
             <button id="copyCodeWaitingBtn" class="p-3 bg-gray-600/50 hover:bg-gray-500/50 rounded-xl outline-button" title="Copy code">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M4 1.5H3a2 0 0 0-2 2V14a2 0 0 0 2 2h10a2 0 0 0 2-2V3.5a2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/></svg>
             </button>
         </div>
 
@@ -393,7 +325,16 @@
     <div id="gameScreen" class="hidden w-full h-full">
         <div class="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-4 xl:gap-8 w-full h-full">
             
-            <div class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 order-2 lg:order-1 player-info-panel">
+            <div class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 order-2 lg:order-1">
+                <div class="mb-4">
+                    <p class="text-gray-400 text-sm">Room Code:</p>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span id="gameCodeDisplay" class="text-lg font-mono bg-gray-900/50 px-3 py-1 rounded-lg"></span>
+                        <button id="copyCodeBtn" class="p-2 bg-gray-600/50 hover:bg-gray-500/50 rounded-lg outline-button" title="Copy code">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/></svg>
+                        </button>
+                    </div>
+                </div>
                 <div class="mb-4">
                     <h3 class="text-xl font-semibold mb-3 text-white">Players:</h3>
                     <div id="gamePlayerList" class="space-y-2">
@@ -408,14 +349,18 @@
             <div class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 order-3">
                 <h3 class="text-xl font-semibold mb-3 text-white">Dice</h3>
                 <div class="flex justify-center items-center mb-4 h-28">
-                    <div id="dice" class="dice hidden"> <div class="dice-cube" id="diceCube">
+                    <div id="dice" class="dice">
+                        <div class="dice-cube" id="diceCube">
                             <div class="dice-face face-1">1</div><div class="dice-face face-2">2</div><div class="dice-face face-3">3</div><div class="dice-face face-4">4</div><div class="dice-face face-5">5</div><div class="dice-face face-6">6</div>
                         </div>
                     </div>
                 </div>
                 <p id="turnStatusDisplay" class="text-lg text-yellow-300 text-center mb-4 min-h-[40px] flex items-center justify-center"></p>
 
-                </div>
+                <button id="rollDiceBtn" class="w-full text-white font-bold py-4 px-4 rounded-xl text-xl btn-animated btn-primary outline-button transition-all duration-300 hover:scale-105" disabled>
+                    Roll Dice
+                </button>
+            </div>
         </div>
     </div>
     
@@ -477,14 +422,13 @@
         const createGameBtn = document.getElementById('createGameBtn');
         const joinGameBtn = document.getElementById('joinGameBtn');
         const gameCodeInput = document.getElementById('gameCodeInput');
-        // const gameCodeDisplay = document.getElementById('gameCodeDisplay'); // In-game display - Removed
+        const gameCodeDisplay = document.getElementById('gameCodeDisplay'); // In-game display
         const waitingRoomGameCode = document.getElementById('waitingRoomGameCode'); // Waiting room display
-        // const copyCodeBtn = document.getElementById('copyCodeBtn'); // In-game copy - Removed
+        const copyCodeBtn = document.getElementById('copyCodeBtn'); // In-game copy
         const copyCodeWaitingBtn = document.getElementById('copyCodeWaitingBtn'); // Waiting room copy
         const startGameBtn = document.getElementById('startGameBtn');
         const ludoBoard = document.getElementById('ludoBoard');
-        // const rollDiceBtn = document.getElementById('rollDiceBtn'); // Removed
-        const dice = document.getElementById('dice'); // The dice container
+        const rollDiceBtn = document.getElementById('rollDiceBtn');
         const diceCube = document.getElementById('diceCube');
         const turnStatusDisplay = document.getElementById('turnStatusDisplay');
         const initialScreenError = document.getElementById('initialScreenError');
@@ -727,24 +671,17 @@
                 gameScreen.classList.add('hidden');
                 waitingRoomScreen.classList.remove('hidden');
                 waitingRoomGameCode.textContent = gameData.roomCode;
-                // Hide in-game room code if it was visible
-                // document.getElementById('gameCodeDisplay').closest('div').classList.add('hidden');
 
                 const isCreator = gameData.creatorId === currentUser.uid;
                 startGameBtn.classList.toggle('hidden', !isCreator);
                 startGameBtn.disabled = !(isCreator && gameData.players.length >= 2);
                 startGameBtn.textContent = `Start Game (${gameData.players.length}/4 Players)`;
-
-                // Hide dice when in waiting room
-                dice.classList.add('hidden');
-
             } else if (gameData.state === 'playing') {
                 waitingRoomScreen.classList.add('hidden');
                 initialScreen.classList.add('hidden');
                 gameScreen.classList.remove('hidden');
-                // gameCodeDisplay.textContent = gameData.roomCode; // Removed as per request
-                // document.getElementById('gameCodeDisplay').closest('div').classList.add('hidden'); // Ensure room code is hidden
-
+                gameCodeDisplay.textContent = gameData.roomCode;
+                
                 // Remove all existing pieces before re-rendering to prevent duplicates
                 document.querySelectorAll('.piece').forEach(p => p.remove());
                 
@@ -779,29 +716,13 @@
                 turnStatusDisplay.innerHTML = `${gameData.currentTurn.charAt(0).toUpperCase() + gameData.currentTurn.slice(1)}'s turn to roll!`;
                 if(gameData.diceValue) {
                     turnStatusDisplay.innerHTML = `${gameData.currentTurn.charAt(0).toUpperCase() + gameData.currentTurn.slice(1)} rolled a <strong class="text-2xl text-white">${gameData.diceValue}</strong>. Make a move!`;
-                    // If dice value is present, hide the dice until next turn or piece moves
-                    dice.classList.add('hidden');
-                } else {
-                    // Show dice only if it's my turn AND diceValue is null (meaning, I need to roll)
-                    if (isMyTurn) {
-                        dice.classList.remove('hidden');
-                    } else {
-                        dice.classList.add('hidden');
-                    }
                 }
 
-
-                // rollDiceBtn.disabled = !isMyTurn || gameData.diceValue !== null || isAnimating; // Removed
-                // Instead, control dice clickability
-                dice.style.pointerEvents = (!isMyTurn || gameData.diceValue !== null || isAnimating) ? 'none' : 'auto';
-                dice.style.opacity = (!isMyTurn || gameData.diceValue !== null || isAnimating) ? '0.5' : '1';
-
-
+                rollDiceBtn.disabled = !isMyTurn || gameData.diceValue !== null || isAnimating;
                 updateMovablePieces(isMyTurn, gameData.diceValue);
 
             } else if (gameData.state === 'finished') {
-                // rollDiceBtn.disabled = true; // Removed
-                dice.classList.add('hidden'); // Hide dice when game is finished
+                rollDiceBtn.disabled = true;
                 turnStatusDisplay.textContent = ''; 
                 winnerText.textContent = `${gameData.winner.charAt(0).toUpperCase() + gameData.winner.slice(1)}`;
                 winnerModal.classList.remove('hidden');
@@ -911,9 +832,7 @@
         
         async function animatePieceMove(pieceEl, color, startAbsolutePosition, endAbsolutePosition) {
             isAnimating = true;
-            // rollDiceBtn.disabled = true; // Removed
-            dice.style.pointerEvents = 'none'; // Disable dice during animation
-            dice.style.opacity = '0.5';
+            rollDiceBtn.disabled = true;
             document.querySelectorAll('.piece.movable').forEach(p => p.classList.remove('movable'));
 
             const boardRect = ludoBoard.getBoundingClientRect();
@@ -921,34 +840,55 @@
             pieceEl.classList.add('piece-animating');
             ludoBoard.appendChild(pieceEl); // Move to board container for absolute positioning
 
-            let currentPathCoords;
-            if (startAbsolutePosition === -1) { // From base to first active position
+            let startCoords;
+            if (startAbsolutePosition === -1) { // From base
                 const baseInnerEl = document.querySelector(`#base-inner-${color}`);
-                const baseRect = baseInnerEl.getBoundingClientRect();
-                 currentPathCoords = [
-                    baseRect.top + baseRect.height / 2 - boardRect.top - pieceEl.offsetHeight / 2,
-                    baseRect.left + baseRect.width / 2 - boardRect.left - pieceEl.offsetWidth / 2
-                ];
-                // Set initial position to the center of the base inner element
-                pieceEl.style.top = `${currentPathCoords[0]}px`;
-                pieceEl.style.left = `${currentPathCoords[1]}px`;
-                await new Promise(res => setTimeout(res, 150)); // Small delay for initial placement
-            } 
-            
-            // Determine the actual starting point for the step-by-step animation
-            // If from base, start from 0; otherwise, start from next step after current position
-            const animationStartAbsolutePos = (startAbsolutePosition === -1) ? 0 : startAbsolutePosition + 1;
+                if (baseInnerEl) {
+                    const baseRect = baseInnerEl.getBoundingClientRect();
+                    startCoords = [
+                        baseRect.top + baseRect.height / 2 - boardRect.top - pieceEl.offsetHeight / 2,
+                        baseRect.left + baseRect.width / 2 - boardRect.left - pieceEl.offsetWidth / 2
+                    ];
+                } else {
+                    console.error("Could not find base inner element for animation start.");
+                    startCoords = [0,0];
+                }
+            } else {
+                const cellEl = getCellElementByAbsolutePosition(color, startAbsolutePosition);
+                if (cellEl) {
+                    const cellRect = cellEl.getBoundingClientRect();
+                    startCoords = [
+                        cellRect.top - boardRect.top,
+                        cellRect.left - boardRect.left
+                    ];
+                } else {
+                    console.error(`Could not find start cell element for animation at absolute position ${startAbsolutePosition}`);
+                    startCoords = [0,0];
+                }
+            }
+            pieceEl.style.top = `${startCoords[0]}px`;
+            pieceEl.style.left = `${startCoords[1]}px`;
 
-            for (let i = animationStartAbsolutePos; i <= endAbsolutePosition; i++) {
-                const cellEl = getCellElementByAbsolutePosition(color, i);
+
+            // Generate path coordinates for animation
+            const pathAbsolutePositions = [];
+            if (startAbsolutePosition === -1) { // Moving from base to first active position
+                pathAbsolutePositions.push(0); // Add the first active cell's absolute position
+            } else {
+                for (let i = startAbsolutePosition + 1; i <= endAbsolutePosition; i++) {
+                    pathAbsolutePositions.push(i);
+                }
+            }
+
+            for (const currentAbsolutePos of pathAbsolutePositions) {
+                const cellEl = getCellElementByAbsolutePosition(color, currentAbsolutePos);
                 if (cellEl) {
                     const cellRect = cellEl.getBoundingClientRect();
                     pieceEl.style.top = `${cellRect.top - boardRect.top}px`;
                     pieceEl.style.left = `${cellRect.left - boardRect.left}px`;
                     await new Promise(res => setTimeout(res, 150)); // Delay for animation step
                 } else {
-                    console.error(`Animation ERROR: Cell not found for absolute position ${i}`);
-                    break; // Stop animation if a cell is not found
+                    console.error(`Animation ERROR: Cell not found for absolute position ${currentAbsolutePos}`);
                 }
             }
             
@@ -1104,9 +1044,7 @@
         }
 
         async function handleRollDice() {
-            // Check if dice is enabled for rolling
-            if (dice.style.pointerEvents === 'none' || isAnimating) return;
-            
+            if (rollDiceBtn.disabled) return;
             const diceResult = Math.floor(Math.random() * 6) + 1;
             
             const rotations = {
@@ -1115,10 +1053,6 @@
             };
             diceCube.style.transform = `rotateX(${Math.random()*1440+720}deg) rotateY(${Math.random()*1440+720}deg)`;
             
-            // Disable dice interaction during roll animation
-            dice.style.pointerEvents = 'none';
-            dice.style.opacity = '0.5';
-
             setTimeout(async () => {
                 diceCube.style.transform = rotations[diceResult];
                 const gameRef = doc(db, `artifacts/${appId}/public/data/ludoGames`, currentGameId);
@@ -1256,23 +1190,22 @@
             else initialScreenError.textContent = "Please enter a game code.";
         });
         startGameBtn.addEventListener('click', handleStartGame);
-        dice.addEventListener('click', handleRollDice); // Changed from rollDiceBtn to dice
+        rollDiceBtn.addEventListener('click', handleRollDice);
         ludoBoard.addEventListener('click', handlePieceMove);
         playAgainBtn.addEventListener('click', resetGame);
         
         // Copy code buttons
-        // Removed copyCodeBtn as room code is hidden
-        // copyCodeBtn.addEventListener('click', () => {
-        //     const codeToCopy = currentGameData ? currentGameData.roomCode : '';
-        //     if (codeToCopy) {
-        //         navigator.clipboard.writeText(codeToCopy).then(() => {
-        //             copyCodeBtn.classList.add('bg-green-500/50');
-        //             setTimeout(() => copyCodeBtn.classList.remove('bg-green-500/50'), 1000);
-        //         }).catch(err => {
-        //             console.error('Failed to copy text: ', err);
-        //         });
-        //     }
-        // });
+        copyCodeBtn.addEventListener('click', () => {
+            const codeToCopy = currentGameData ? currentGameData.roomCode : '';
+            if (codeToCopy) {
+                navigator.clipboard.writeText(codeToCopy).then(() => {
+                    copyCodeBtn.classList.add('bg-green-500/50');
+                    setTimeout(() => copyCodeBtn.classList.remove('bg-green-500/50'), 1000);
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                });
+            }
+        });
         copyCodeWaitingBtn.addEventListener('click', () => {
             const codeToCopy = currentGameData ? currentGameData.roomCode : '';
             if (codeToCopy) {
