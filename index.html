@@ -7,18 +7,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Sticky Roll Dice Button for Mobile - ADJUSTED */
+        /* Sticky Roll Dice Button for Mobile (no longer needed, but keeping for reference if design changes) */
         @media (max-width: 768px) {
-            /* Remove position fixed to keep it in flow */
-            #rollDiceBtn {
-                position: relative; /* Changed from fixed to relative */
-                bottom: auto;
-                left: auto;
-                transform: none;
-                width: 100%; /* Ensure it takes full width in its container */
-                max-width: none;
-                z-index: auto;
-                box-shadow: none; /* Reset box-shadow if not fixed */
+            #rollDiceBtn { /* This ID will be removed, but the rule can remain for now */
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: calc(100% - 2rem);
+                max-width: 400px;
+                z-index: 100;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.5);
             }
         }
 
@@ -34,13 +33,12 @@
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #1f2937, #374151);
-            /* overflow: hidden; */ /* Removed to allow scrolling if content overflows */
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 100vh; /* Changed from 10vh to 100vh for full viewport height */
+            min-height: 10vh; /* Reduced height to ensure content fits within typical browser viewports for demonstration */
             padding: 1rem;
-            box-sizing: border-box; /* Ensures padding is included in height */
         }
 
         .glass-panel {
@@ -170,7 +168,9 @@
         }
 
         .dice { width: 80px; height: 80px; perspective: 1200px; }
-        .dice-cube { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 1.5s cubic-bezier(0.45, 0, 0.55, 1); }
+        .dice-cube { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 1.5s cubic-bezier(0.45, 0, 0.55, 1); cursor: pointer;}
+        .dice-cube.disabled { cursor: not-allowed; opacity: 0.5; }
+
         .dice-face {
             position: absolute;
             width: 80px; height: 80px;
@@ -324,10 +324,10 @@
     </div>
 
 
-    <div id="gameScreen" class="hidden w-full h-full flex items-center justify-center">
-        <div class="main-content-wrapper flex flex-col lg:flex-row items-center lg:items-start justify-center gap-4 xl:gap-8 w-full max-w-screen-xl mx-auto">
+    <div id="gameScreen" class="hidden w-full h-full">
+        <div class="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-4 xl:gap-8 w-full h-full">
             
-            <div class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 order-2 lg:order-1 flex-shrink-0">
+            <div class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 order-2 lg:order-1">
                 <div class="mb-4">
                     <p class="text-gray-400 text-sm">Room Code:</p>
                     <div class="flex items-center gap-2 mt-1">
@@ -344,25 +344,21 @@
                 </div>
             </div>
 
-            <div id="boardContainer" class="flex flex-col items-center justify-center order-1 lg:order-2 flex-grow">
+            <div id="boardContainer" class="flex flex-col items-center justify-center order-1 lg:order-2">
                  <div class="ludo-board" id="ludoBoard"></div>
-            </div>
-
-            <div class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 order-3 flex-shrink-0">
-                <h3 class="text-xl font-semibold mb-3 text-white">Dice</h3>
-                <div class="flex justify-center items-center mb-4 h-28">
-                    <div id="dice" class="dice">
-                        <div class="dice-cube" id="diceCube">
-                            <div class="dice-face face-1">1</div><div class="dice-face face-2">2</div><div class="dice-face face-3">3</div><div class="dice-face face-4">4</div><div class="dice-face face-5">5</div><div class="dice-face face-6">6</div>
+                 <div class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 mt-4">
+                    <h3 class="text-xl font-semibold mb-3 text-white">Dice</h3>
+                    <div class="flex justify-center items-center h-28">
+                        <div id="dice" class="dice">
+                            <div class="dice-cube" id="diceCube">
+                                <div class="dice-face face-1">1</div><div class="dice-face face-2">2</div><div class="dice-face face-3">3</div><div class="dice-face face-4">4</div><div class="dice-face face-5">5</div><div class="dice-face face-6">6</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <p id="turnStatusDisplay" class="text-lg text-yellow-300 text-center mb-4 min-h-[40px] flex items-center justify-center"></p>
-
-                <button id="rollDiceBtn" class="w-full text-white font-bold py-4 px-4 rounded-xl text-xl btn-animated btn-primary outline-button transition-all duration-300 hover:scale-105" disabled>
-                    Roll Dice
-                </button>
+                    </div>
             </div>
+            <div class="w-full max-w-sm lg:w-72 hidden lg:block order-3"></div>
+
         </div>
     </div>
     
@@ -389,7 +385,7 @@
             authDomain: "app-store-87d8a.firebaseapp.com",
             databaseURL: "https://app-store-87d8a-default-rtdb.firebaseio.com",
             projectId: "app-store-87d8a", 
-            storageBucket: "app-store-87d8a.firebaseusercontent.com",
+            storageBucket: "app-store-87d8a.firebasestorage.app",
             messagingSenderId: "404049348425",
             appId: "1:404049348425:web:2b11e8c35f4b1553c1fc98" 
         };
@@ -430,9 +426,9 @@
         const copyCodeWaitingBtn = document.getElementById('copyCodeWaitingBtn'); // Waiting room copy
         const startGameBtn = document.getElementById('startGameBtn');
         const ludoBoard = document.getElementById('ludoBoard');
-        const rollDiceBtn = document.getElementById('rollDiceBtn');
+        // const rollDiceBtn = document.getElementById('rollDiceBtn'); // Removed
         const diceCube = document.getElementById('diceCube');
-        const turnStatusDisplay = document.getElementById('turnStatusDisplay');
+        // const turnStatusDisplay = document.getElementById('turnStatusDisplay'); // Removed
         const initialScreenError = document.getElementById('initialScreenError');
         const winnerModal = document.getElementById('winner-modal');
         const winnerText = document.getElementById('winnerText');
@@ -440,6 +436,7 @@
         const initialScreenButtons = [createGameBtn, joinGameBtn];
         const playerList = document.getElementById('playerList'); // Player list in waiting room
         const gamePlayerList = document.getElementById('gamePlayerList'); // Player list in game screen
+        const diceEl = document.getElementById('dice'); // Added to control dice visibility
 
         // --- GAME STATE ---
         let currentUser = null;
@@ -673,6 +670,7 @@
                 gameScreen.classList.add('hidden');
                 waitingRoomScreen.classList.remove('hidden');
                 waitingRoomGameCode.textContent = gameData.roomCode;
+                diceEl.classList.add('hidden'); // Hide dice in waiting room
 
                 const isCreator = gameData.creatorId === currentUser.uid;
                 startGameBtn.classList.toggle('hidden', !isCreator);
@@ -715,17 +713,32 @@
                 const myColor = gameData.players.find(p => p.id === currentUser.uid)?.color;
                 const isMyTurn = gameData.currentTurn === myColor;
                 
-                turnStatusDisplay.innerHTML = `${gameData.currentTurn.charAt(0).toUpperCase() + gameData.currentTurn.slice(1)}'s turn to roll!`;
-                if(gameData.diceValue) {
-                    turnStatusDisplay.innerHTML = `${gameData.currentTurn.charAt(0).toUpperCase() + gameData.currentTurn.slice(1)} rolled a <strong class="text-2xl text-white">${gameData.diceValue}</strong>. Make a move!`;
+                // Show/hide dice based on turn
+                if (isMyTurn && !isAnimating) {
+                    diceEl.classList.remove('hidden');
+                    diceCube.classList.remove('disabled');
+                    // Display current dice value if already rolled
+                    if (gameData.diceValue) {
+                        const rotations = {
+                            1: 'rotateY(0deg)', 2: 'rotateY(-90deg)', 3: 'rotateY(-180deg)',
+                            4: 'rotateY(90deg)', 5: 'rotateX(-90deg)', 6: 'rotateX(90deg)'
+                        };
+                        diceCube.style.transform = rotations[gameData.diceValue];
+                    } else {
+                        // Reset dice visual if not rolled yet
+                        diceCube.style.transform = 'rotateX(0deg) rotateY(0deg)';
+                    }
+                } else {
+                    diceEl.classList.add('hidden');
+                    diceCube.classList.add('disabled');
                 }
-
-                rollDiceBtn.disabled = !isMyTurn || gameData.diceValue !== null || isAnimating;
+                
+                // Roll dice button is removed, logic moved to diceCube click
+                // rollDiceBtn.disabled = !isMyTurn || gameData.diceValue !== null || isAnimating;
                 updateMovablePieces(isMyTurn, gameData.diceValue);
 
             } else if (gameData.state === 'finished') {
-                rollDiceBtn.disabled = true;
-                turnStatusDisplay.textContent = ''; 
+                diceEl.classList.add('hidden'); // Hide dice when game is finished
                 winnerText.textContent = `${gameData.winner.charAt(0).toUpperCase() + gameData.winner.slice(1)}`;
                 winnerModal.classList.remove('hidden');
             }
@@ -834,7 +847,8 @@
         
         async function animatePieceMove(pieceEl, color, startAbsolutePosition, endAbsolutePosition) {
             isAnimating = true;
-            rollDiceBtn.disabled = true;
+            // rollDiceBtn.disabled = true; // Removed
+            diceCube.classList.add('disabled'); // Disable dice click during animation
             document.querySelectorAll('.piece.movable').forEach(p => p.classList.remove('movable'));
 
             const boardRect = ludoBoard.getBoundingClientRect();
@@ -1046,7 +1060,13 @@
         }
 
         async function handleRollDice() {
-            if (rollDiceBtn.disabled) return;
+            // Check if it's the current user's turn and dice hasn't been rolled yet
+            const myColor = currentGameData.players.find(p => p.id === currentUser.uid)?.color;
+            if (currentGameData.currentTurn !== myColor || currentGameData.diceValue !== null || isAnimating) {
+                console.warn("Cannot roll dice: Not your turn, dice already rolled, or animation in progress.");
+                return;
+            }
+
             const diceResult = Math.floor(Math.random() * 6) + 1;
             
             const rotations = {
@@ -1054,12 +1074,12 @@
                 4: 'rotateY(90deg)', 5: 'rotateX(-90deg)', 6: 'rotateX(90deg)'
             };
             diceCube.style.transform = `rotateX(${Math.random()*1440+720}deg) rotateY(${Math.random()*1440+720}deg)`;
-            
+            diceCube.classList.add('disabled'); // Disable dice click immediately after roll
+
             setTimeout(async () => {
                 diceCube.style.transform = rotations[diceResult];
                 const gameRef = doc(db, `artifacts/${appId}/public/data/ludoGames`, currentGameId);
                 
-                const myColor = currentGameData.currentTurn;
                 const player = currentGameData.players.find(p => p.color === myColor);
                 
                 const hasValidMoves = player.pieces.some((p, i) => calculateNewPieceStateAndPosition(myColor, p.state, p.absolutePosition, diceResult).isValid);
@@ -1192,7 +1212,8 @@
             else initialScreenError.textContent = "Please enter a game code.";
         });
         startGameBtn.addEventListener('click', handleStartGame);
-        rollDiceBtn.addEventListener('click', handleRollDice);
+        // rollDiceBtn.addEventListener('click', handleRollDice); // Removed
+        diceCube.addEventListener('click', handleRollDice); // New event listener for dice cube
         ludoBoard.addEventListener('click', handlePieceMove);
         playAgainBtn.addEventListener('click', resetGame);
         
