@@ -135,16 +135,53 @@
 
         .center-house {
             grid-area: 7 / 7 / span 3 / span 3;
-            display: flex;
+            display: flex; /* Changed to flex to align inner triangles */
             justify-content: center;
             align-items: center;
             background-color: var(--board-dark);
+            position: relative; /* Ensure absolute children are relative to this */
         }
-        .center-triangle {
-            width: 0; height: 0; border-style: solid;
+
+        .center-triangle { 
+            width: 0; 
+            height: 0; 
+            border-style: solid; 
             position: absolute; 
+            /* Common values for triangle size. Each triangle takes 1.5 cells worth of space */
+            --tri-dim: calc(95vmin / 15 * 1.5);
         }
-        /* Adjusted positioning for center triangles based on 95vmin board size */
+
+        /* Yellow triangle (Top-Left quadrant, points bottom-right to center) */
+        .center-triangle-yellow { 
+            border-width: 0 var(--tri-dim) var(--tri-dim) 0;
+            border-color: transparent var(--yellow) var(--yellow) transparent;
+            top: 0; 
+            left: 0; 
+        }
+        /* Green triangle (Top-Right quadrant, points bottom-left to center) */
+        .center-triangle-green { 
+            border-width: 0 0 var(--tri-dim) var(--tri-dim);
+            border-color: transparent transparent var(--green) var(--green);
+            top: 0; 
+            left: var(--tri-dim); 
+        }
+        /* Red triangle (Bottom-Left quadrant, points top-right to center) */
+        .center-triangle-red { 
+            border-width: var(--tri-dim) var(--tri-dim) 0 0;
+            border-color: var(--red) var(--red) transparent transparent;
+            top: var(--tri-dim); 
+            left: 0; 
+        }
+        /* Blue triangle (Bottom-Right quadrant, points top-left to center) */
+        .center-triangle-blue { 
+            border-width: var(--tri-dim) 0 0 var(--tri-dim);
+            border-color: var(--blue) transparent transparent var(--blue);
+            top: var(--tri-dim); 
+            left: var(--tri-dim); 
+        }
+
+        /* Adjusted positioning for center triangles based on 95vmin board size - REMOVED */
+        /*
         .center-triangle-red { 
             border-width: calc(95vmin / 15 * 2.5) calc(95vmin / 15 * 3) calc(95vmin / 15 * 3); 
             border-color: transparent transparent var(--red) transparent; 
@@ -172,6 +209,7 @@
             left: calc(95vmin / 15 * 6); 
             transform: rotate(-90deg); 
         }
+        */
 
         .piece {
             width: 75%;
