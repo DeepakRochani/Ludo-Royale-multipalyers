@@ -1371,6 +1371,10 @@
         // --- INITIALIZE ---
         buildBoard();
         console.log("Script loaded successfully and all tags are closed.");
+        // Explicitly ensure only the initial screen is visible on load
+        initialScreen.classList.remove('hidden');
+        waitingRoomScreen.classList.add('hidden');
+        gameScreen.classList.add('hidden');
     </script>
 </body>
 </html>
