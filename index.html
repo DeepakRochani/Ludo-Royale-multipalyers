@@ -37,7 +37,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 10vh; /* Reduced height to ensure content fits within typical browser viewports for demonstration */
+            min-height: 100vh;
             padding: 1rem;
         }
 
@@ -94,33 +94,38 @@
             justify-content: center;
             align-items: center;
             background-color: var(--board-dark);
-            overflow: hidden; /* Hide overflow to prevent triangles from going outside */
-            position: relative; /* Essential for positioning inner triangles */
         }
         .center-triangle {
-            width: 0; 
-            height: 0; 
-            border-style: solid;
+            width: 0; height: 0; border-style: solid;
             position: absolute; 
-            /* Base size for triangles, adjusted to fit the 3x3 grid area */
-            border-width: calc(95vmin / 15 * 1.5) calc(95vmin / 15 * 1.5) calc(95vmin / 15 * 1.5);
         }
         /* Adjusted positioning for center triangles based on 95vmin board size */
         .center-triangle-red { 
+            border-width: calc(95vmin / 15 * 2.5) calc(95vmin / 15 * 3) calc(95vmin / 15 * 3); 
             border-color: transparent transparent var(--red) transparent; 
-            transform: translateY(calc(95vmin / 15 * 0.5)); /* Move down */
+            top: calc(95vmin / 15 * 6); 
+            left: calc(95vmin / 15 * 6); 
         }
         .center-triangle-green { 
+            border-width: calc(95vmin / 15 * 2.5) calc(95vmin / 15 * 3) calc(95vmin / 15 * 3); 
             border-color: transparent transparent var(--green) transparent; 
-            transform: translateY(calc(-95vmin / 15 * 0.5)) rotate(180deg); /* Move up, rotate 180 */
+            top: calc(95vmin / 15 * 6); 
+            left: calc(95vmin / 15 * 6); 
+            transform: rotate(180deg); 
         }
         .center-triangle-yellow { 
+            border-width: calc(95vmin / 15 * 2.5) calc(95vmin / 15 * 3) calc(95vmin / 15 * 3); 
             border-color: transparent transparent var(--yellow) transparent; 
-            transform: translateX(calc(-95vmin / 15 * 0.5)) rotate(90deg); /* Move left, rotate 90 */
+            top: calc(95vmin / 15 * 6); 
+            left: calc(95vmin / 15 * 6); 
+            transform: rotate(90deg); 
         }
         .center-triangle-blue { 
+            border-width: calc(95vmin / 15 * 2.5) calc(95vmin / 15 * 3) calc(95vmin / 15 * 3); 
             border-color: transparent transparent var(--blue) transparent; 
-            transform: translateX(calc(95vmin / 15 * 0.5)) rotate(-90deg); /* Move right, rotate -90 */
+            top: calc(95vmin / 15 * 6); 
+            left: calc(95vmin / 15 * 6); 
+            transform: rotate(-90deg); 
         }
 
         .piece {
@@ -309,12 +314,6 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/></svg>
             </button>
         </div>
-
-        <div class="mb-8 text-left">
-            <h3 class="text-2xl font-semibold mb-3 text-white">Players:</h3>
-            <div id="playerList" class="space-y-2">
-                </div>
-        </div>
         
         <button id="startGameBtn" class="w-full text-white font-bold py-4 px-4 rounded-xl text-xl btn-animated btn-primary outline-button transition-all duration-300 hover:scale-105" disabled>
             Start Game
@@ -325,7 +324,11 @@
     <div id="gameScreen" class="hidden w-full h-full">
         <div class="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-4 xl:gap-8 w-full h-full">
             
-            <div class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 order-2 lg:order-1">
+            <div id="boardContainer" class="flex flex-col items-center justify-center order-1 lg:order-2">
+                 <div class="ludo-board" id="ludoBoard"></div>
+            </div>
+
+            <div class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 order-3">
                 <div class="mb-4">
                     <p class="text-gray-400 text-sm">Room Code:</p>
                     <div class="flex items-center gap-2 mt-1">
@@ -335,18 +338,6 @@
                         </button>
                     </div>
                 </div>
-                <div class="mb-4">
-                    <h3 class="text-xl font-semibold mb-3 text-white">Players:</h3>
-                    <div id="gamePlayerList" class="space-y-2">
-                        </div>
-                </div>
-            </div>
-
-            <div id="boardContainer" class="flex flex-col items-center justify-center order-1 lg:order-2">
-                 <div class="ludo-board" id="ludoBoard"></div>
-            </div>
-
-            <div class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 order-3">
                 <h3 class="text-xl font-semibold mb-3 text-white">Dice</h3>
                 <div class="flex justify-center items-center mb-4 h-28">
                     <div id="dice" class="dice">
@@ -436,8 +427,6 @@
         const winnerText = document.getElementById('winnerText');
         const playAgainBtn = document.getElementById('playAgainBtn');
         const initialScreenButtons = [createGameBtn, joinGameBtn];
-        const playerList = document.getElementById('playerList'); // Player list in waiting room
-        const gamePlayerList = document.getElementById('gamePlayerList'); // Player list in game screen
 
         // --- GAME STATE ---
         let currentUser = null;
@@ -662,9 +651,6 @@
             if (!gameData) return;
             currentGameData = gameData;
             console.log("Rendering game with data:", JSON.parse(JSON.stringify(gameData)));
-
-            // Update player lists
-            updatePlayerLists(gameData.players);
             
             if (gameData.state === 'waiting') {
                 initialScreen.classList.add('hidden');
@@ -674,8 +660,8 @@
 
                 const isCreator = gameData.creatorId === currentUser.uid;
                 startGameBtn.classList.toggle('hidden', !isCreator);
-                startGameBtn.disabled = !(isCreator && gameData.players.length >= 2);
-                startGameBtn.textContent = `Start Game (${gameData.players.length}/4 Players)`;
+                startGameBtn.disabled = !isCreator; // Removed player count condition
+                startGameBtn.textContent = `Start Game`;
             } else if (gameData.state === 'playing') {
                 waitingRoomScreen.classList.add('hidden');
                 initialScreen.classList.add('hidden');
@@ -727,54 +713,6 @@
                 winnerText.textContent = `${gameData.winner.charAt(0).toUpperCase() + gameData.winner.slice(1)}`;
                 winnerModal.classList.remove('hidden');
             }
-        }
-
-        function updatePlayerLists(players) {
-            // Update waiting room player list
-            playerList.innerHTML = '';
-            players.forEach(p => {
-                const div = document.createElement('div');
-                div.className = 'player-list-item';
-                div.innerHTML = `
-                    <div class="player-color-dot" style="background-color: var(--${p.color});"></div>
-                    <span class="text-white">${p.color.charAt(0).toUpperCase() + p.color.slice(1)} Player</span>
-                    ${p.id === currentGameData.creatorId ? '<span class="ml-auto text-sm text-gray-400">(Host)</span>' : ''}
-                    ${p.id === currentUser.uid ? '<span class="ml-2 text-sm text-indigo-300">(You)</span>' : ''}
-                `;
-                playerList.appendChild(div);
-            });
-
-            // Update in-game player list (always show all 4 colors, even if not joined)
-            gamePlayerList.innerHTML = '';
-            COLORS.forEach(color => {
-                const player = players.find(p => p.color === color);
-                const div = document.createElement('div');
-                div.className = 'player-list-item';
-                let playerName = `${color.charAt(0).toUpperCase() + color.slice(1)} Player`;
-                let playerStatus = '';
-                
-                if (player) {
-                    if (player.id === currentUser.uid) {
-                        playerStatus = '(You)';
-                    } else if (player.id === currentGameData.creatorId) {
-                        playerStatus = '(Host)';
-                    }
-                    const piecesHomeCount = player.pieces.filter(p => p.state === 'home').length;
-                    if (currentGameData.state === 'playing') {
-                        playerStatus += ` - Home: ${piecesHomeCount}/4`;
-                    }
-                } else {
-                    playerName = `${color.charAt(0).toUpperCase() + color.slice(1)} (Empty)`;
-                    div.classList.add('opacity-50');
-                }
-
-                div.innerHTML = `
-                    <div class="player-color-dot" style="background-color: var(--${color});"></div>
-                    <span class="text-white">${playerName}</span>
-                    <span class="ml-auto text-sm text-gray-400">${playerStatus}</span>
-                `;
-                gamePlayerList.appendChild(div);
-            });
         }
         
         // --- GAME LOGIC ---
@@ -1035,11 +973,6 @@
 
         async function handleStartGame() {
             if (!currentGameId || currentGameData.creatorId !== currentUser.uid) return;
-            // Ensure there are at least 2 players to start
-            if (currentGameData.players.length < 2) {
-                console.warn("Cannot start game: Less than 2 players.");
-                return;
-            }
             await updateDoc(doc(db, `artifacts/${appId}/public/data/ludoGames`, currentGameId), { state: 'playing' });
         }
 
