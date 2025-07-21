@@ -159,10 +159,14 @@
             transition: outline 0.2s ease-in-out, box-shadow 0.2s ease; /* Smooth transition for the outline */
         }
         
+        /* MODIFIED: Added fixed width and height to prevent zoom effect */
         .piece-animating {
             position: absolute !important;
             z-index: 100;
             transition: none !important; /* Disable all transitions during movement animation */
+            /* Set fixed size to prevent "zooming" when re-parented to the board */
+            width: calc(95vmin / 15 * 0.75);
+            height: calc(95vmin / 15 * 0.75);
         }
 
         .dice { width: 80px; height: 80px; perspective: 1200px; }
