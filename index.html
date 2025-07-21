@@ -1308,19 +1308,18 @@
 
         // --- SHARE FUNCTIONS ---
         function shareGameCode(code) {
-            const shareText = `Come join my Ludo Royale game! Use code: *${code}* to play with me.`;
-            const shareUrl = `https://ludo-royale-multipalyers.vercel.app/{code}`; // Replace with your actual game URL if hosted
+            const codeToShare = `*${code}*`; // Only the bolded code
 
             if (navigator.share) {
                 navigator.share({
-                    title: 'Ludo Royale Game Invitation',
-                    text: shareText,
-                    url: shareUrl,
+                    title: 'Ludo Game Code',
+                    text: codeToShare,
+                    // url: shareUrl, // Removed URL as per user request
                 }).then(() => console.log('Shared successfully'))
                   .catch((error) => console.error('Error sharing:', error));
             } else {
                 // Fallback for browsers that don't support Web Share API (e.g., desktop)
-                const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + "\n" + shareUrl)}`;
+                const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(codeToShare)}`;
                 window.open(whatsappUrl, '_blank');
             }
         }
