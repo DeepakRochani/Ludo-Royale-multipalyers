@@ -1309,7 +1309,7 @@
         // --- SHARE FUNCTIONS ---
         function shareGameCode(code) {
             const shareText = `Come join my Ludo Royale game! Use code: *${code}* to play with me.`;
-            const shareUrl = `https://ludo.example.com?code=${code}`; // Replace with your actual game URL if hosted
+            const shareUrl = `https://ludo-royale-multipalyers.vercel.app/{code}`; // Replace with your actual game URL if hosted
 
             if (navigator.share) {
                 navigator.share({
