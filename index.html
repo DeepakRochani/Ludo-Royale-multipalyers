@@ -159,12 +159,10 @@
             transition: outline 0.2s ease-in-out, box-shadow 0.2s ease; /* Smooth transition for the outline */
         }
         
-        /* MODIFIED: Added fixed width and height to prevent zoom effect */
         .piece-animating {
             position: absolute !important;
             z-index: 100;
             transition: none !important; /* Disable all transitions during movement animation */
-            /* Set fixed size to prevent "zooming" when re-parented to the board */
             width: calc(95vmin / 15 * 0.75);
             height: calc(95vmin / 15 * 0.75);
         }
@@ -661,7 +659,11 @@
         // --- UI & GAME RENDER ---
         function renderGame(gameData) {
             if (!gameData) return;
-            currentGameData = gameData;
+            
+            // Store the color of the player whose turn it was *before* this update.
+            const previousTurnColor = currentGameData ? currentGameData.currentTurn : null;
+
+            currentGameData = gameData; // Update the global state
             console.log("Rendering game with data:", JSON.parse(JSON.stringify(gameData)));
 
             // Update player lists
@@ -678,6 +680,7 @@
                 startGameBtn.classList.toggle('hidden', !isCreator);
                 startGameBtn.disabled = !(isCreator && gameData.players.length >= 2);
                 startGameBtn.textContent = `Start Game (${gameData.players.length}/4 Players)`;
+
             } else if (gameData.state === 'playing') {
                 waitingRoomScreen.classList.add('hidden');
                 initialScreen.classList.add('hidden');
@@ -719,24 +722,29 @@
                 if (isMyTurn && !isAnimating) {
                     diceEl.classList.remove('hidden');
                     diceCube.classList.remove('disabled');
-                    // Display current dice value if already rolled
+                    
                     if (gameData.diceValue) {
+                        // There's a rolled value, so display it.
                         const rotations = {
                             1: 'rotateY(0deg)', 2: 'rotateY(-90deg)', 3: 'rotateY(-180deg)',
                             4: 'rotateY(90deg)', 5: 'rotateX(-90deg)', 6: 'rotateX(90deg)'
                         };
                         diceCube.style.transform = rotations[gameData.diceValue];
                     } else {
-                        // Reset dice visual if not rolled yet
-                        diceCube.style.transform = 'rotateX(0deg) rotateY(0deg)';
+                        // No dice value. This happens at the start of a turn, or after moving on a 6.
+                        // We only want to reset the dice visual if the turn has just switched to this player.
+                        if (gameData.currentTurn !== previousTurnColor) {
+                            // It's a brand new turn for this player, reset the dice to show 1.
+                            diceCube.style.transform = 'rotateX(0deg) rotateY(0deg)';
+                        }
+                        // If currentTurn === previousTurnColor, it means the player just moved on a 6.
+                        // In this case, we do nothing, leaving the dice showing the 6.
                     }
                 } else {
                     diceEl.classList.add('hidden');
                     diceCube.classList.add('disabled');
                 }
                 
-                // Roll dice button is removed, logic moved to diceCube click
-                // rollDiceBtn.disabled = !isMyTurn || gameData.diceValue !== null || isAnimating;
                 updateMovablePieces(isMyTurn, gameData.diceValue);
 
             } else if (gameData.state === 'finished') {
