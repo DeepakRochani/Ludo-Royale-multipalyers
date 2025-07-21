@@ -327,7 +327,7 @@
     <div id="gameScreen" class="hidden w-full h-full">
         <div class="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-4 xl:gap-8 w-full h-full">
             
-            <div class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 order-2 lg:order-1">
+            <div id="gameInfoPanel" class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 order-2 lg:order-1">
                 <div class="mb-4">
                     <p class="text-gray-400 text-sm">Room Code:</p>
                     <div class="flex items-center gap-2 mt-1">
@@ -437,6 +437,7 @@
         const playerList = document.getElementById('playerList'); // Player list in waiting room
         const gamePlayerList = document.getElementById('gamePlayerList'); // Player list in game screen
         const diceEl = document.getElementById('dice'); // Added to control dice visibility
+        const gameInfoPanel = document.getElementById('gameInfoPanel'); // Panel containing room code and player list
 
         // --- GAME STATE ---
         let currentUser = null;
@@ -675,7 +676,8 @@
                 waitingRoomScreen.classList.remove('hidden');
                 waitingRoomGameCode.textContent = gameData.roomCode;
                 diceEl.classList.add('hidden'); // Hide dice in waiting room
-
+                gameInfoPanel.classList.remove('hidden'); // Ensure info panel is visible in waiting room
+                
                 const isCreator = gameData.creatorId === currentUser.uid;
                 startGameBtn.classList.toggle('hidden', !isCreator);
                 startGameBtn.disabled = !(isCreator && gameData.players.length >= 2);
@@ -685,7 +687,8 @@
                 waitingRoomScreen.classList.add('hidden');
                 initialScreen.classList.add('hidden');
                 gameScreen.classList.remove('hidden');
-                gameCodeDisplay.textContent = gameData.roomCode;
+                // Hide the game info panel when the game starts
+                gameInfoPanel.classList.add('hidden'); 
                 
                 // Remove all existing pieces before re-rendering to prevent duplicates
                 document.querySelectorAll('.piece').forEach(p => p.remove());
@@ -749,6 +752,7 @@
 
             } else if (gameData.state === 'finished') {
                 diceEl.classList.add('hidden'); // Hide dice when game is finished
+                gameInfoPanel.classList.remove('hidden'); // Optionally show info panel again on finish
                 winnerText.textContent = `${gameData.winner.charAt(0).toUpperCase() + gameData.winner.slice(1)}`;
                 winnerModal.classList.remove('hidden');
             }
@@ -770,6 +774,7 @@
             });
 
             // Update in-game player list (always show all 4 colors, even if not joined)
+            // This is now hidden when the game starts, but the function still updates it if needed later.
             gamePlayerList.innerHTML = ''; // Clear existing
             COLORS.forEach(color => {
                 const player = players.find(p => p.color === color);
