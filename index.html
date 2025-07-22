@@ -1,36 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ludo Royale</title>
-    <script src="https://cdn.tailwindcss.com">
-        function removePlayerFromRoom() {
-            const roomCode = localStorage.getItem("roomCode");
-            if (!roomCode || !uid) return;
-
-            const roomRef = db.collection("ludoRooms").doc(roomCode);
-            const playerField = `players.${uid}`;
-
-            roomRef.update({
-                [playerField]: firebase.firestore.FieldValue.delete()
-            }).then(() => {
-                console.log("Player removed on disconnect.");
-            }).catch((error) => {
-                console.error("Error removing player:", error);
-            });
-        }
-
-        window.addEventListener("beforeunload", removePlayerFromRoom);
-
-    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* Sticky Roll Dice Button for Mobile (no longer needed, but keeping for reference if design changes) */
         @media (max-width: 768px) {
-            #rollDiceBtn {
-                /* This ID will be removed, but the rule can remain for now */
+            #rollDiceBtn { /* This ID will be removed, but the rule can remain for now */
                 position: fixed;
                 bottom: 20px;
                 left: 50%;
@@ -38,7 +17,7 @@
                 width: calc(100% - 2rem);
                 max-width: 400px;
                 z-index: 100;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+                box-shadow: 0 4px 20px rgba(0,0,0,0.5);
             }
         }
 
@@ -58,13 +37,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            /* Changed to 100vh for full viewport height */
+            min-height: 100vh; /* Changed to 100vh for full viewport height */
             padding: 1rem;
-            box-sizing: border-box;
-            /* Ensures padding doesn't cause overflow */
-            touch-action: manipulation;
-            /* Added for improved mobile touch responsiveness */
+            box-sizing: border-box; /* Ensures padding doesn't cause overflow */
+            touch-action: manipulation; /* Added for improved mobile touch responsiveness */
         }
 
         .glass-panel {
@@ -86,7 +62,7 @@
             grid-template-columns: repeat(15, 1fr);
             grid-template-rows: repeat(15, 1fr);
             gap: 1px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
             position: relative;
         }
 
@@ -96,47 +72,20 @@
             align-items: center;
             position: relative;
         }
-
-        .cell-path {
-            background-color: var(--board-light);
-        }
-
-        .cell-base {
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .cell-base-inner {
-            background-color: white;
-            width: 80%;
-            height: 80%;
-            border-radius: 0.5rem;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: 1fr 1fr;
-            padding: 10%;
-            gap: 10%;
-        }
-
-        .cell-red {
-            background-color: var(--red);
-        }
-
-        .cell-green {
-            background-color: var(--green);
-        }
-
-        .cell-yellow {
-            background-color: var(--yellow);
-        }
-
-        .cell-blue {
-            background-color: var(--blue);
-        }
+        
+        .cell-path { background-color: var(--board-light); }
+        .cell-base { border: 2px solid rgba(255,255,255,0.2); }
+        .cell-base-inner { background-color: white; width: 80%; height: 80%; border-radius: 0.5rem; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; padding: 10%; gap: 10%; }
+        
+        .cell-red { background-color: var(--red); }
+        .cell-green { background-color: var(--green); }
+        .cell-yellow { background-color: var(--yellow); }
+        .cell-blue { background-color: var(--blue); }
 
         .cell-safe::after {
             content: '★';
             font-size: calc(1.5vmin + 5px);
-            color: rgba(0, 0, 0, 0.2);
+            color: rgba(0,0,0,0.2);
             position: absolute;
             z-index: 0;
         }
@@ -147,44 +96,33 @@
             justify-content: center;
             align-items: center;
             background-color: var(--board-dark);
-            overflow: hidden;
-            /* Hide overflow to prevent triangles from going outside */
-            position: relative;
-            /* Essential for positioning inner triangles */
+            overflow: hidden; /* Hide overflow to prevent triangles from going outside */
+            position: relative; /* Essential for positioning inner triangles */
         }
-
         .center-triangle {
-            width: 0;
-            height: 0;
+            width: 0; 
+            height: 0; 
             border-style: solid;
-            position: absolute;
+            position: absolute; 
             /* Base size for triangles, adjusted to fit the 3x3 grid area */
             border-width: calc(95vmin / 15 * 1.5) calc(95vmin / 15 * 1.5) calc(95vmin / 15 * 1.5);
         }
-
         /* Adjusted positioning for center triangles based on 95vmin board size */
-        .center-triangle-red {
-            border-color: transparent transparent var(--red) transparent;
-            transform: translateY(calc(95vmin / 15 * 0.5));
-            /* Move down */
+        .center-triangle-red { 
+            border-color: transparent transparent var(--red) transparent; 
+            transform: translateY(calc(95vmin / 15 * 0.5)); /* Move down */
         }
-
-        .center-triangle-green {
-            border-color: transparent transparent var(--green) transparent;
-            transform: translateY(calc(-95vmin / 15 * 0.5)) rotate(180deg);
-            /* Move up, rotate 180 */
+        .center-triangle-green { 
+            border-color: transparent transparent var(--green) transparent; 
+            transform: translateY(calc(-95vmin / 15 * 0.5)) rotate(180deg); /* Move up, rotate 180 */
         }
-
-        .center-triangle-yellow {
-            border-color: transparent transparent var(--yellow) transparent;
-            transform: translateX(calc(-95vmin / 15 * 0.5)) rotate(90deg);
-            /* Move left, rotate 90 */
+        .center-triangle-yellow { 
+            border-color: transparent transparent var(--yellow) transparent; 
+            transform: translateX(calc(-95vmin / 15 * 0.5)) rotate(90deg); /* Move left, rotate 90 */
         }
-
-        .center-triangle-blue {
-            border-color: transparent transparent var(--blue) transparent;
-            transform: translateX(calc(95vmin / 15 * 0.5)) rotate(-90deg);
-            /* Move right, rotate -90 */
+        .center-triangle-blue { 
+            border-color: transparent transparent var(--blue) transparent; 
+            transform: translateX(calc(95vmin / 15 * 0.5)) rotate(-90deg); /* Move right, rotate -90 */
         }
 
         .piece {
@@ -193,87 +131,51 @@
             border-radius: 50%;
             cursor: pointer;
             /* Removed transform from transition */
-            transition: box-shadow 0.2s ease;
+            transition: box-shadow 0.2s ease; 
             position: relative;
             z-index: 10;
             display: flex;
             justify-content: center;
             align-items: center;
-            border: 2px solid rgba(0, 0, 0, 0.3);
-            box-shadow: inset 0 -3px 5px rgba(0, 0, 0, 0.3), 0 3px 5px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(0,0,0,0.3);
+            box-shadow: inset 0 -3px 5px rgba(0,0,0,0.3), 0 3px 5px rgba(0,0,0,0.2);
         }
-
         .piece::before {
             content: '';
             position: absolute;
-            top: 10%;
-            left: 20%;
-            width: 60%;
-            height: 40%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 70%);
+            top: 10%; left: 20%;
+            width: 60%; height: 40%;
+            background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 70%);
             border-radius: 50%;
             transform: rotate(45deg);
         }
-
-        .piece.red {
-            background-color: var(--red);
-        }
-
-        .piece.green {
-            background-color: var(--green);
-        }
-
-        .piece.yellow {
-            background-color: var(--yellow);
-        }
-
-        .piece.blue {
-            background-color: var(--blue);
-        }
+        .piece.red { background-color: var(--red); }
+        .piece.green { background-color: var(--green); }
+        .piece.yellow { background-color: var(--yellow); }
+        .piece.blue { background-color: var(--blue); }
 
         /* Modified: Removed pulse-glow animation and used outline for movable pieces */
         .piece.movable {
-            outline: 3px dashed var(--color);
-            /* Use outline for visibility without affecting layout */
-            outline-offset: 2px;
-            /* Add some space between piece and outline */
-            transition: outline 0.2s ease-in-out, box-shadow 0.2s ease;
-            /* Smooth transition for the outline */
+            outline: 3px dashed var(--color); /* Use outline for visibility without affecting layout */
+            outline-offset: 2px; /* Add some space between piece and outline */
+            transition: outline 0.2s ease-in-out, box-shadow 0.2s ease; /* Smooth transition for the outline */
         }
-
+        
         .piece-animating {
             position: absolute !important;
             z-index: 100;
-            transition: none !important;
-            /* Disable all transitions during movement animation */
+            transition: none !important; /* Disable all transitions during movement animation */
             width: calc(95vmin / 15 * 0.75);
             height: calc(95vmin / 15 * 0.75);
         }
 
-        .dice {
-            width: 80px;
-            height: 80px;
-            perspective: 1200px;
-        }
-
-        .dice-cube {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 1.5s cubic-bezier(0.45, 0, 0.55, 1);
-            cursor: pointer;
-        }
-
-        .dice-cube.disabled {
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
+        .dice { width: 80px; height: 80px; perspective: 1200px; }
+        .dice-cube { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 1.5s cubic-bezier(0.45, 0, 0.55, 1); cursor: pointer;}
+        .dice-cube.disabled { cursor: not-allowed; opacity: 0.5; }
 
         .dice-face {
             position: absolute;
-            width: 80px;
-            height: 80px;
+            width: 80px; height: 80px;
             border: 2px solid var(--board-dark);
             border-radius: 12px;
             background: #f0f0f0;
@@ -283,54 +185,31 @@
             font-size: 36px;
             font-weight: bold;
             color: var(--board-dark);
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
         }
-
-        .face-1 {
-            transform: rotateY(0deg) translateZ(40px);
-        }
-
-        .face-2 {
-            transform: rotateY(90deg) translateZ(40px);
-        }
-
-        .face-3 {
-            transform: rotateY(180deg) translateZ(40px);
-        }
-
-        .face-4 {
-            transform: rotateY(-90deg) translateZ(40px);
-        }
-
-        .face-5 {
-            transform: rotateX(90deg) translateZ(40px);
-        }
-
-        .face-6 {
-            transform: rotateX(-90deg) translateZ(40px);
-        }
+        .face-1 { transform: rotateY(0deg) translateZ(40px); }
+        .face-2 { transform: rotateY(90deg) translateZ(40px); }
+        .face-3 { transform: rotateY(180deg) translateZ(40px); }
+        .face-4 { transform: rotateY(-90deg) translateZ(40px); }
+        .face-5 { transform: rotateX(90deg) translateZ(40px); }
+        .face-6 { transform: rotateX(-90deg) translateZ(40px); }
 
         .btn-primary {
             background: linear-gradient(145deg, #5a67d8, #7f9cf5);
             border: none;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 -2px 0 rgba(0, 0, 0, 0.2);
-            outline: none;
-            /* Default outline for animation */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2), inset 0 -2px 0 rgba(0,0,0,0.2);
+            outline: none; /* Default outline for animation */
             transition: all 0.3s ease;
         }
-
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3), inset 0 -2px 0 rgba(0,0,0,0.2);
         }
-
         .btn-primary:active {
             transform: translateY(1px);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
-            animation: button-press 0.2s ease-out;
-            /* Add animation on active */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2), inset 0 -1px 0 rgba(0,0,0,0.1);
+            animation: button-press 0.2s ease-out; /* Add animation on active */
         }
-
         .btn-primary:disabled {
             background: #4a5568;
             cursor: not-allowed;
@@ -338,33 +217,23 @@
             box-shadow: none;
             outline: none;
         }
-
+        
         /* Button animation on click */
         /* Removed .btn-animated class as it's redundant now */
         @keyframes button-press {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(0.98);
-            }
-
-            100% {
-                transform: scale(1);
-            }
+            0% { transform: scale(1); }
+            50% { transform: scale(0.98); }
+            100% { transform: scale(1); }
         }
-
+        
         .outline-button {
             position: relative;
             z-index: 1;
             /* Ensure text and content are above the outline effect */
-            display: flex;
-            /* Or inline-flex */
+            display: flex; /* Or inline-flex */
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-            /* Crucial to contain the before pseudo-element */
+            overflow: hidden; /* Crucial to contain the before pseudo-element */
         }
 
         .outline-button::before {
@@ -374,12 +243,9 @@
             left: -2px;
             right: -2px;
             bottom: -2px;
-            border-radius: inherit;
-            /* Inherit border-radius from the button */
-            padding: 2px;
-            /* Adjust padding to control outline thickness */
-            background: linear-gradient(45deg, #a78bfa, #c4b5fd);
-            /* Gradient for outline */
+            border-radius: inherit; /* Inherit border-radius from the button */
+            padding: 2px; /* Adjust padding to control outline thickness */
+            background: linear-gradient(45deg, #a78bfa, #c4b5fd); /* Gradient for outline */
             -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             -webkit-mask-composite: xor;
@@ -389,39 +255,35 @@
         }
 
         .outline-button:hover::before {
-            background: linear-gradient(45deg, #818cf8, #a78bfa);
-            /* Change gradient on hover */
+             background: linear-gradient(45deg, #818cf8, #a78bfa); /* Change gradient on hover */
         }
 
         .outline-button:active::before {
-            background: linear-gradient(45deg, #6366f1, #8b5cf6);
-            /* Change gradient on active */
+            background: linear-gradient(45deg, #6366f1, #8b5cf6); /* Change gradient on active */
         }
-
+        
         /* Specific styles for WhatsApp button to match its brand color */
         .btn-whatsapp {
             background: linear-gradient(145deg, #25D366, #128C7E);
             color: white;
             border: none;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2), inset 0 -2px 0 rgba(0,0,0,0.2);
             transition: all 0.3s ease;
         }
-
         .btn-whatsapp:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3), inset 0 -2px 0 rgba(0,0,0,0.2);
         }
-
         .btn-whatsapp:active {
             transform: translateY(1px);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2), inset 0 -1px 0 rgba(0,0,0,0.1);
             animation: button-press 0.2s ease-out;
         }
 
 
         /* Waiting room specific styles */
         .player-list-item {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255,255,255,0.1);
             border-radius: 0.75rem;
             padding: 0.75rem 1rem;
             margin-bottom: 0.5rem;
@@ -429,82 +291,64 @@
             align-items: center;
             gap: 0.75rem;
         }
-
         .player-color-dot {
             width: 1rem;
             height: 1rem;
             border-radius: 50%;
-            border: 1px solid rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(0,0,0,0.2);
         }
 
         /* Responsive adjustments */
-        @media (max-width: 1023px) {
-
-            /* For screens smaller than lg */
+        @media (max-width: 1023px) { /* For screens smaller than lg */
             body {
-                overflow-y: auto;
-                /* Allow scrolling on smaller screens if content overflows */
+                overflow-y: auto; /* Allow scrolling on smaller screens if content overflows */
                 min-height: auto;
             }
-
             #gameScreen .lg\:flex-row {
                 flex-direction: column;
             }
-
             #gameScreen .lg\:items-start {
                 align-items: center;
             }
-
             #gameInfoPanel {
-                order: 1;
-                /* Place info panel above board on small screens */
-                max-width: 95vmin;
-                /* Adjust width for better mobile fit */
-                width: 100%;
-                /* Make it full width on small screens */
+                order: 1; /* Place info panel above board on small screens */
+                max-width: 95vmin; /* Adjust width for better mobile fit */
+                width: 100%; /* Make it full width on small screens */
             }
-
             #boardContainer {
                 order: 2;
-                margin-top: 1rem;
-                /* Space between info panel and board */
+                margin-top: 1rem; /* Space between info panel and board */
             }
-
             #gameScreen .lg\:w-72.hidden.lg\:block {
-                display: none;
-                /* Hide the dummy div on small screens */
+                display: none; /* Hide the dummy div on small screens */
             }
-
             .ludo-board {
                 width: 90vmin;
                 height: 90vmin;
             }
         }
-
         @media (max-height: 700px) and (min-width: 1024px) {
             body {
                 padding: 0.5rem;
             }
-
             .ludo-board {
                 width: 80vmin;
                 height: 80vmin;
             }
         }
+
     </style>
 </head>
-
 <body class="text-gray-200">
 
     <div id="initialScreen" class="w-full max-w-lg p-8 glass-panel text-center">
         <h1 class="text-5xl font-bold mb-4 text-white drop-shadow-lg">Ludo Royale</h1>
         <p class="text-gray-300 mb-8">The ultimate online Ludo challenge</p>
-
-        <button id="createGameBtn"
-            class="w-full text-white font-bold py-4 px-4 rounded-xl text-xl btn-primary outline-button mb-4 transition-all duration-300 hover:scale-105">
+        
+        <button id="createGameBtn" class="w-full text-white font-bold py-4 px-4 rounded-xl text-xl btn-primary outline-button mb-4 transition-all duration-300 hover:scale-105">
             Create New Game
         </button>
-
+        
         <div class="relative flex py-5 items-center">
             <div class="flex-grow border-t border-gray-600"></div>
             <span class="flex-shrink mx-4 text-gray-400">OR</span>
@@ -512,10 +356,8 @@
         </div>
 
         <div class="flex flex-col sm:flex-row gap-3">
-            <input type="text" id="gameCodeInput" placeholder="Enter Game Code"
-                class="flex-grow bg-gray-800 border-2 border-gray-600 rounded-xl p-4 text-center focus:outline-none focus:border-indigo-500 transition text-lg">
-            <button id="joinGameBtn"
-                class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 px-6 rounded-xl outline-button transition-all duration-300 hover:scale-105">
+            <input type="text" id="gameCodeInput" placeholder="Enter Game Code" class="flex-grow bg-gray-800 border-2 border-gray-600 rounded-xl p-4 text-center focus:outline-none focus:border-indigo-500 transition text-lg">
+            <button id="joinGameBtn" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 px-6 rounded-xl outline-button transition-all duration-300 hover:scale-105">
                 Join
             </button>
         </div>
@@ -525,27 +367,17 @@
     <div id="waitingRoomScreen" class="hidden w-full max-w-lg p-8 glass-panel text-center">
         <h2 class="text-4xl font-bold mb-4 text-white drop-shadow-lg">Waiting for Players</h2>
         <p class="text-gray-300 mb-6">Share this code with your friends:</p>
-
+        
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
-            <span id="waitingRoomGameCode"
-                class="text-4xl font-mono bg-gray-900/50 px-5 py-2 rounded-xl text-indigo-300 tracking-wider"></span>
-            <button id="copyCodeWaitingBtn"
-                class="p-3 bg-gray-600/50 hover:bg-gray-500/50 rounded-xl outline-button transition-all duration-300 flex items-center justify-center"
-                title="Copy code">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-                    <path
-                        d="M4 1.5H3a2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z" />
-                    <path
-                        d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z" />
-                </svg>
+            <span id="waitingRoomGameCode" class="text-4xl font-mono bg-gray-900/50 px-5 py-2 rounded-xl text-indigo-300 tracking-wider"></span>
+            <button id="copyCodeWaitingBtn" class="p-3 bg-gray-600/50 hover:bg-gray-500/50 rounded-xl outline-button transition-all duration-300 flex items-center justify-center" title="Copy code">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M4 1.5H3a2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/></svg>
             </button>
         </div>
 
-        <button id="shareWhatsappWaitingBtn"
-            class="w-full text-white font-bold py-3 px-4 rounded-xl text-lg btn-whatsapp outline-button mb-8 flex items-center justify-center gap-2 transition-all duration-300 hover:scale-105">
+        <button id="shareWhatsappWaitingBtn" class="w-full text-white font-bold py-3 px-4 rounded-xl text-lg btn-whatsapp outline-button mb-8 flex items-center justify-center gap-2 transition-all duration-300 hover:scale-105">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-                <path
-                    d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.334.068 7.468c0 1.747.623 3.371 1.751 4.673l-1.73 6.009L4.113 15.67c1.339.774 2.894 1.25 4.542 1.25h.001c4.366 0 7.923-3.334 7.923-7.468 0-1.747-.623-3.371-1.751-4.673zm-1.111 3.256c-.19.094-.654.32-.756.357-.101.037-.213.056-.307-.057-.094-.113-.234-.27-.323-.377-.089-.107-.183-.095-.25-.066-.067.03-.433.27-.534.33-.101.06-.182.079-.31.042-.128-.038-.307-.119-.387-.197-.079-.08-.19-.155-.26-.226-.069-.07-.163-.133-.254-.189-.091-.056-.1-.082-.03-.153.065-.07.135-.157.202-.236.066-.079.135-.165.195-.236.06-.07.03-.133-.02-.189-.05-.056-.454-1.096-.622-1.492-.167-.396-.334-.326-.454-.333-.119-.007-.26-.008-.387-.008s-.33.012-.5.18c-.17.168-.646.634-.646 1.543 0 .91.667 1.782.75 1.899.083.117 1.288 1.97 3.12 2.738.905.375 1.624.548 2.14.685.515.137.66.117.904-.047.244-.164.813-.674.92-.84.106-.168.106-.156.195-.282.088-.126.193-.263.29-.387.096-.124.192-.258.288-.386.095-.128.175-.252.22-.317.045-.065.09-.087.16-.046z" />
+                <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.334.068 7.468c0 1.747.623 3.371 1.751 4.673l-1.73 6.009L4.113 15.67c1.339.774 2.894 1.25 4.542 1.25h.001c4.366 0 7.923-3.334 7.923-7.468 0-1.747-.623-3.371-1.751-4.673zm-1.111 3.256c-.19.094-.654.32-.756.357-.101.037-.213.056-.307-.057-.094-.113-.234-.27-.323-.377-.089-.107-.183-.095-.25-.066-.067.03-.433.27-.534.33-.101.06-.182.079-.31.042-.128-.038-.307-.119-.387-.197-.079-.08-.19-.155-.26-.226-.069-.07-.163-.133-.254-.189-.091-.056-.1-.082-.03-.153.065-.07.135-.157.202-.236.066-.079.135-.165.195-.236.06-.07.03-.133-.02-.189-.05-.056-.454-1.096-.622-1.492-.167-.396-.334-.326-.454-.333-.119-.007-.26-.008-.387-.008s-.33.012-.5.18c-.17.168-.646.634-.646 1.543 0 .91.667 1.782.75 1.899.083.117 1.288 1.97 3.12 2.738.905.375 1.624.548 2.14.685.515.137.66.117.904-.047.244-.164.813-.674.92-.84.106-.168.106-.156.195-.282.088-.126.193-.263.29-.387.096-.124.192-.258.288-.386.095-.128.175-.252.22-.317.045-.065.09-.087.16-.046z"/>
             </svg>
             Share via WhatsApp
         </button>
@@ -553,12 +385,10 @@
         <div class="mb-8 text-left">
             <h3 class="text-2xl font-semibold mb-3 text-white">Players:</h3>
             <div id="playerList" class="space-y-2">
-            </div>
+                </div>
         </div>
-
-        <button id="startGameBtn"
-            class="w-full text-white font-bold py-4 px-4 rounded-xl text-xl btn-primary outline-button transition-all duration-300 hover:scale-105"
-            disabled>
+        
+        <button id="startGameBtn" class="w-full text-white font-bold py-4 px-4 rounded-xl text-xl btn-primary outline-button transition-all duration-300 hover:scale-105" disabled>
             Start Game
         </button>
     </div>
@@ -566,30 +396,19 @@
 
     <div id="gameScreen" class="hidden w-full h-full flex items-center justify-center">
         <div class="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-4 xl:gap-8 w-full h-full">
-
+            
             <div id="gameInfoPanel" class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 order-2 lg:order-1">
                 <div class="mb-4">
                     <p class="text-gray-400 text-sm">Room Code:</p>
                     <div class="flex items-center gap-2 mt-1">
                         <span id="gameCodeDisplay" class="text-lg font-mono bg-gray-900/50 px-3 py-1 rounded-lg"></span>
-                        <button id="copyCodeBtn"
-                            class="p-2 bg-gray-600/50 hover:bg-gray-500/50 rounded-lg outline-button transition-all duration-300 flex items-center justify-center"
-                            title="Copy code">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                viewBox="0 0 16 16">
-                                <path
-                                    d="M4 1.5H3a2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z" />
-                                <path
-                                    d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z" />
-                            </svg>
+                        <button id="copyCodeBtn" class="p-2 bg-gray-600/50 hover:bg-gray-500/50 rounded-lg outline-button transition-all duration-300 flex items-center justify-center" title="Copy code">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M4 1.5H3a2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/></svg>
                         </button>
                     </div>
-                    <button id="shareWhatsappGameBtn"
-                        class="w-full text-white font-bold py-2 px-4 rounded-xl text-sm btn-whatsapp outline-button mt-3 flex items-center justify-center gap-2 transition-all duration-300 hover:scale-105">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            viewBox="0 0 16 16">
-                            <path
-                                d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.334.068 7.468c0 1.747.623 3.371 1.751 4.673l-1.73 6.009L4.113 15.67c1.339.774 2.894 1.25 4.542 1.25h.001c4.366 0 7.923-3.334 7.923-7.468 0-1.747-.623-3.371-1.751-4.673zm-1.111 3.256c-.19.094-.654.32-.756.357-.101.037-.213.056-.307-.057-.094-.113-.234-.27-.323-.377-.089-.107-.183-.095-.25-.066-.067.03-.433.27-.534.33-.101.06-.182.079-.31.042-.128-.038-.307-.119-.387-.197-.079-.08-.19-.155-.26-.226-.069-.07-.163-.133-.254-.189-.091-.056-.1-.082-.03-.153.065-.07.135-.157.202-.236.066-.079.135-.165.195-.236.06-.07.03-.133-.02-.189-.05-.056-.454-1.096-.622-1.492-.167-.396-.334-.326-.454-.333-.119-.007-.26-.008-.387-.008s-.33.012-.5.18c-.17.168-.646.634-.646 1.543 0 .91.667 1.782.75 1.899.083.117 1.288 1.97 3.12 2.738.905.375 1.624.548 2.14.685.515.137.66.117.904-.047.244-.164.813-.674.92-.84.106-.168.106-.156.195-.282.088-.126.193-.263.29-.387.096-.124.192-.258.288-.386.095-.128.175-.252.22-.317.045-.065.09-.087.16-.046z" />
+                    <button id="shareWhatsappGameBtn" class="w-full text-white font-bold py-2 px-4 rounded-xl text-sm btn-whatsapp outline-button mt-3 flex items-center justify-center gap-2 transition-all duration-300 hover:scale-105">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.334.068 7.468c0 1.747.623 3.371 1.751 4.673l-1.73 6.009L4.113 15.67c1.339.774 2.894 1.25 4.542 1.25h.001c4.366 0 7.923-3.334 7.923-7.468 0-1.747-.623-3.371-1.751-4.673zm-1.111 3.256c-.19.094-.654.32-.756.357-.101.037-.213.056-.307-.057-.094-.113-.234-.27-.323-.377-.089-.107-.183-.095-.25-.066-.067.03-.433.27-.534.33-.101.06-.182.079-.31.042-.128-.038-.307-.119-.387-.197-.079-.08-.19-.155-.26-.226-.069-.07-.163-.133-.254-.189-.091-.056-.1-.082-.03-.153.065-.07.135-.157.202-.236.066-.079.135-.165.195-.236.06-.07.03-.133-.02-.189-.05-.056-.454-1.096-.622-1.492-.167-.396-.334-.326-.454-.333-.119-.007-.26-.008-.387-.008s-.33.012-.5.18c-.17.168-.646.634-.646 1.543 0 .91.667 1.782.75 1.899.083.117 1.288 1.97 3.12 2.738.905.375 1.624.548 2.14.685.515.137.66.117.904-.047.244-.164.813-.674.92-.84.106-.168.106-.156.195-.282.088-.126.193-.263.29-.387.096-.124.192-.258.288-.386.095-.128.175-.252.22-.317.045-.065.09-.087.16-.046z"/>
                         </svg>
                         Share via WhatsApp
                     </button>
@@ -597,65 +416,38 @@
                 <div class="mb-4">
                     <h3 class="text-xl font-semibold mb-3 text-white">Players:</h3>
                     <div id="gamePlayerList" class="space-y-2">
-                    </div>
+                        </div>
                 </div>
             </div>
 
             <div id="boardContainer" class="flex flex-col items-center justify-center order-1 lg:order-2">
-                <div class="ludo-board" id="ludoBoard"></div>
-                <div class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 mt-4">
+                 <div class="ludo-board" id="ludoBoard"></div>
+                 <div class="w-full max-w-sm lg:w-72 glass-panel p-4 lg:p-6 mt-4">
                     <h3 class="text-xl font-semibold mb-3 text-white">Dice</h3>
                     <div class="flex justify-center items-center h-28">
                         <div id="dice" class="dice">
                             <div class="dice-cube" id="diceCube">
-                                <div class="dice-face face-1">1</div>
-                                <div class="dice-face face-2">2</div>
-                                <div class="dice-face face-3">3</div>
-                                <div class="dice-face face-4">4</div>
-                                <div class="dice-face face-5">5</div>
-                                <div class="dice-face face-6">6</div>
+                                <div class="dice-face face-1">1</div><div class="dice-face face-2">2</div><div class="dice-face face-3">3</div><div class="dice-face face-4">4</div><div class="dice-face face-5">5</div><div class="dice-face face-6">6</div>
                             </div>
                         </div>
                     </div>
-                </div>
+                    </div>
             </div>
             <div class="w-full max-w-sm lg:w-72 hidden lg:block order-3"></div>
 
         </div>
     </div>
-
-    <div id="chatContainer" class="glass-panel p-4 max-w-sm w-full mt-4 hidden">
-        <h3 class="text-xl font-semibold mb-2 text-white">Game Chat</h3>
-        <div id="chatMessages" class="h-40 overflow-y-auto bg-gray-800 rounded-lg p-3 text-sm mb-3"></div>
-        <form id="chatForm" class="flex gap-2">
-            <input type="text" id="chatInput" placeholder="Type a message..."
-                class="flex-grow bg-gray-700 text-white p-2 rounded-lg" />
-            <button type="submit" class="btn-primary px-4 py-2 rounded-lg outline-button">Send</button>
-        </form>
-    </div>
-
-    <div id="winPopup" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center hidden z-50">
-        <div class="bg-white text-black p-6 rounded-xl text-center max-w-sm w-full">
-            <h2 id="winMessage" class="text-2xl font-bold mb-4">You Win!</h2>
-            <button onclick="location.reload()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg">Play
-                Again</button>
-        </div>
-    </div>
-
-
-
+    
     <div id="winner-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-        <div
-            class="glass-panel p-8 rounded-2xl shadow-2xl text-center transform transition-all scale-95 animate-fade-in">
+        <div class="glass-panel p-8 rounded-2xl shadow-2xl text-center transform transition-all scale-95 animate-fade-in">
             <h2 id="winnerText" class="text-5xl font-bold text-yellow-400 mb-4 drop-shadow-lg"></h2>
             <p class="text-gray-200 text-xl mb-8">is the Ludo Royale Champion!</p>
-            <button id="playAgainBtn"
-                class="text-white font-bold py-3 px-8 rounded-xl text-lg btn-primary outline-button transition-all duration-300 hover:scale-105">
+            <button id="playAgainBtn" class="text-white font-bold py-3 px-8 rounded-xl text-lg btn-primary outline-button transition-all duration-300 hover:scale-105">
                 Play Again
             </button>
         </div>
     </div>
-
+        
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -668,37 +460,34 @@
             apiKey: "AIzaSyBq1gYmfPmBkNgzWtgI-iBzr0Lsq4oMxZU",
             authDomain: "app-store-87d8a.firebaseapp.com",
             databaseURL: "https://app-store-87d8a-default-rtdb.firebaseio.com",
-            projectId: "app-store-87d8a",
+            projectId: "app-store-87d8a", 
             storageBucket: "app-store-87d8a.firebasestorage.app",
             messagingSenderId: "404049348425",
-            appId: "1:404049348425:web:2b11e8c35f4b1553c1fc98"
+            appId: "1:404049348425:web:2b11e8c35f4b1553c1fc98" 
         };
         // Use the appId provided by the Canvas environment, or fallback to the one in firebaseConfig
-        const appId = typeof __app_id !== 'undefined' ? __app_id : firebaseConfig.appId;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : firebaseConfig.appId; 
 
         // --- INIT ---
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-
-        console.log("Starting Firebase auth...");
-
-        // 🔰 Safe spots where kill is not allowed
-        const SAFE_SPOTS = [1, 9, 14, 22, 27, 35, 40, 48];
+         
+       console.log("Starting Firebase auth...");
 
         signInAnonymously(auth).then(() => {
-            console.log("Sign-in attempt done");
+          console.log("Sign-in attempt done");
         }).catch((error) => {
-            console.error("Auth error:", error.message);
+          console.error("Auth error:", error.message);
         });
-
-
+        
+         
         onAuthStateChanged(auth, (user) => {
             console.log("Auth state changed", user);
-            if (user) {
+             if (user) {
                 // No need to update UI elements that are now removed
-            }
-        });
+             }
+         });
 
         // --- DOM ELEMENTS ---
         const initialScreen = document.getElementById('initialScreen');
@@ -730,7 +519,7 @@
 
         // --- GAME STATE ---
         let currentUser = null;
-        let currentGameId = null;
+        let currentGameId = null; 
         let currentGameData = null;
         let unsubscribeGameListener = null;
         let isAnimating = false;
@@ -741,30 +530,30 @@
 
         // Main Path coordinates (0-51, total 52 cells)
         const MAIN_PATH = [
-            [6, 1], [6, 2], [6, 3], [6, 4], [6, 5], // 0-4 (Yellow's path segment towards Green)
-            [5, 6], [4, 6], [3, 6], [2, 6], [1, 6], // 5-9 (Green's path segment towards Top-Middle)
-            [0, 6], [0, 7], [0, 8],             // 10-12 (Top middle 3 cells)
-            [1, 8], [2, 8], [3, 8], [4, 8], [5, 8], // 13-17 (Green's path segment towards Blue)
-            [6, 9], [6, 10], [6, 11], [6, 12], [6, 13], // 18-22 (Blue's path segment towards Right-Middle)
-            [6, 14], [7, 14], [8, 14],          // 23-25 (Right middle 3 cells)
-            [8, 13], [8, 12], [8, 11], [8, 10], [8, 9], // 26-30 (Blue's path segment towards Red)
-            [9, 8], [10, 8], [11, 8], [12, 8], [13, 8], // 31-35 (Red's path segment towards Bottom-Middle)
-            [14, 8], [14, 7], [14, 6],          // 36-38 (Bottom middle 3 cells)
-            [13, 6], [12, 6], [11, 6], [10, 6], [9, 6], // 39-43 (Red's path segment towards Yellow)
-            [8, 5], [8, 4], [8, 3], [8, 2], [8, 1], // 44-48 (Yellow's path segment towards Left-Middle)
-            [8, 0], [7, 0], [6, 0]              // 49-51 (Left middle 3 cells, completes the loop)
+            [6,1],[6,2],[6,3],[6,4],[6,5], // 0-4 (Yellow's path segment towards Green)
+            [5,6],[4,6],[3,6],[2,6],[1,6], // 5-9 (Green's path segment towards Top-Middle)
+            [0,6],[0,7],[0,8],             // 10-12 (Top middle 3 cells)
+            [1,8],[2,8],[3,8],[4,8],[5,8], // 13-17 (Green's path segment towards Blue)
+            [6,9],[6,10],[6,11],[6,12],[6,13], // 18-22 (Blue's path segment towards Right-Middle)
+            [6,14],[7,14],[8,14],          // 23-25 (Right middle 3 cells)
+            [8,13],[8,12],[8,11],[8,10],[8,9], // 26-30 (Blue's path segment towards Red)
+            [9,8],[10,8],[11,8],[12,8],[13,8], // 31-35 (Red's path segment towards Bottom-Middle)
+            [14,8],[14,7],[14,6],          // 36-38 (Bottom middle 3 cells)
+            [13,6],[12,6],[11,6],[10,6],[9,6], // 39-43 (Red's path segment towards Yellow)
+            [8,5],[8,4],[8,3],[8,2],[8,1], // 44-48 (Yellow's path segment towards Left-Middle)
+            [8,0],[7,0],[6,0]              // 49-51 (Left middle 3 cells, completes the loop)
         ];
 
         // Home Path coordinates (0-5 for each color)
         const HOME_PATHS = {
-            yellow: [[7, 1], [7, 2], [7, 3], [7, 4], [7, 5], [7, 6]],
-            green: [[1, 7], [2, 7], [3, 7], [4, 7], [5, 7], [6, 7]],
-            blue: [[7, 13], [7, 12], [7, 11], [7, 10], [7, 9], [7, 8]],
-            red: [[13, 7], [12, 7], [11, 7], [10, 7], [9, 7], [8, 7]]
+            yellow: [[7,1],[7,2],[7,3],[7,4],[7,5],[7,6]], 
+            green: [[1,7],[2,7],[3,7],[4,7],[5,7],[6,7]],
+            blue: [[7,13],[7,12],[7,11],[7,10],[7,9],[7,8]],
+            red: [[13,7],[12,7],[11,7],[10,7],[9,7],[8,7]]
         };
 
         // Starting positions on MAIN_PATH for each color based on visual layout
-        const START_POSITIONS = {
+        const START_POSITIONS = { 
             red: 39,   // Red's start cell: [13,6] (index 39 of MAIN_PATH)
             green: 13,   // Green's start cell: [1,8] (index 13 of MAIN_PATH)
             yellow: 0,   // Yellow's start cell: [6,1] (index 0 of MAIN_PATH)
@@ -838,7 +627,7 @@
                         console.warn("Custom token mismatch, attempting anonymous sign-in as fallback.");
                         try {
                             await signInAnonymously(auth);
-                            return;
+                            return; 
                         } catch (anonError) {
                             console.error("Anonymous sign-in fallback also failed:", anonError);
                             errorMessage = `Authentication failed: Both custom token and anonymous sign-in failed (${anonError.code}). Please refresh.`;
@@ -862,25 +651,6 @@
             return false;
         }
 
-        function checkAndHandleKill(playerId, movedTokenPos, gameData) {
-            let wasKill = false;
-
-            const opponents = gameData.players.filter(p => p.id !== playerId);
-
-            opponents.forEach(opponent => {
-                opponent.tokens.forEach(token => {
-                    if (token.pos === movedTokenPos && !SAFE_SPOTS.includes(movedTokenPos)) {
-                        // Kill detected
-                        token.pos = -1; // Send to base
-                        wasKill = true;
-                    }
-                });
-            });
-
-            return wasKill;
-        }
-
-
         // Pre-calculate a map from [row, col] coordinates to MAIN_PATH index for quick lookup
         const mainPathCoordsToIndex = new Map();
         MAIN_PATH.forEach((coords, i) => {
@@ -900,7 +670,7 @@
                     blue: '10 / 10 / span 6 / span 6',
                     red: '10 / 1 / span 6 / span 6',
                 }[color];
-
+                
                 const baseInner = document.createElement('div');
                 baseInner.className = 'cell-base-inner';
                 baseInner.id = `base-inner-${color}`;
@@ -912,7 +682,7 @@
             MAIN_PATH.forEach((coords, i) => {
                 const [row, col] = coords;
                 if (isHomePathCoord(row, col)) {
-                    return;
+                    return; 
                 }
 
                 const cell = document.createElement('div');
@@ -922,13 +692,13 @@
                 cell.dataset.type = 'path';
                 cell.dataset.index = i;
                 if (SAFE_SPOTS.includes(i)) cell.classList.add('cell-safe');
-
+                
                 // Highlight start cells for visual clarity
                 if (i === START_POSITIONS.red) cell.classList.add('cell-red');
                 if (i === START_POSITIONS.green) cell.classList.add('cell-green');
                 if (i === START_POSITIONS.yellow) cell.classList.add('cell-yellow');
                 if (i === START_POSITIONS.blue) cell.classList.add('cell-blue');
-
+                
                 ludoBoard.appendChild(cell);
             });
 
@@ -937,7 +707,7 @@
                 HOME_PATHS[color].forEach((coords, i) => {
                     const [row, col] = coords;
                     const cell = document.createElement('div');
-                    cell.className = `cell cell-path cell-${color}`;
+                    cell.className = `cell cell-path cell-${color}`; 
                     cell.style.gridRow = row + 1;
                     cell.style.gridColumn = col + 1;
                     cell.dataset.type = `home-${color}`;
@@ -952,7 +722,7 @@
                     ludoBoard.appendChild(cell);
                 });
             }
-
+            
             // Center House
             const center = document.createElement('div');
             center.className = 'center-house';
@@ -968,7 +738,7 @@
         // --- UI & GAME RENDER ---
         function renderGame(gameData) {
             if (!gameData) return;
-
+            
             // Store the color of the player whose turn it was *before* this update.
             const previousTurnColor = currentGameData ? currentGameData.currentTurn : null;
 
@@ -977,7 +747,7 @@
 
             // Update player lists
             updatePlayerLists(gameData.players);
-
+            
             if (gameData.state === 'waiting') {
                 initialScreen.classList.add('hidden');
                 gameScreen.classList.add('hidden');
@@ -986,7 +756,7 @@
                 diceEl.classList.add('hidden'); // Hide dice in waiting room
                 gameInfoPanel.classList.remove('hidden'); // Ensure info panel is visible in waiting room
                 gameCodeDisplay.textContent = gameData.roomCode; // Update game code display in info panel as well
-
+                
                 const isCreator = gameData.creatorId === currentUser.uid;
                 startGameBtn.classList.toggle('hidden', !isCreator);
                 startGameBtn.disabled = !(isCreator && gameData.players.length >= 2);
@@ -997,30 +767,12 @@
                 initialScreen.classList.add('hidden');
                 gameScreen.classList.remove('hidden');
                 // Hide the game info panel when the game starts
-                gameInfoPanel.classList.add('hidden');
+                gameInfoPanel.classList.add('hidden'); 
                 gameCodeDisplay.textContent = gameData.roomCode; // Ensure room code is set even if panel is hidden
-
-                // ✅ Show chat when game starts
-                document.getElementById("chatContainer")?.classList.remove("hidden");
-                setupChatListener(gameData.roomCode);
-
-                checkWinner(gameData);
-
-
-                function checkWinner(gameData) {
-                    const players = gameData.players;
-                    const winner = players.find(player => player.finished === 4);
-                    if (winner) {
-                        const isMe = winner.id === currentUser.uid;
-                        document.getElementById("winPopup").classList.remove("hidden");
-                        document.getElementById("winMessage").textContent = isMe ? "🎉 You Win!" : "😞 You Lose!";
-                    }
-                }
-
-
+                
                 // Remove all existing pieces before re-rendering to prevent duplicates
                 document.querySelectorAll('.piece').forEach(p => p.remove());
-
+                
                 // Pieces
                 gameData.players.forEach(player => {
                     player.pieces.forEach((pieceData, i) => {
@@ -1028,7 +780,7 @@
                         pieceEl.className = `piece ${player.color}`;
                         pieceEl.dataset.color = player.color;
                         pieceEl.dataset.pieceIndex = i;
-
+                        
                         let targetCell;
                         if (pieceData.state === 'base') {
                             targetCell = document.querySelector(`#base-inner-${player.color}`);
@@ -1040,7 +792,7 @@
                             targetCell = getCellElementByAbsolutePosition(player.color, pieceData.absolutePosition);
                         }
 
-                        if (targetCell) {
+                        if(targetCell) {
                             targetCell.appendChild(pieceEl);
                         } else {
                             console.error(`ERROR: Target cell not found for piece ${player.color}-${i} (state: ${pieceData.state}, absolutePosition: ${pieceData.absolutePosition}). Piece not rendered.`);
@@ -1050,12 +802,12 @@
 
                 const myColor = gameData.players.find(p => p.id === currentUser.uid)?.color;
                 const isMyTurn = gameData.currentTurn === myColor;
-
+                
                 // Show/hide dice based on turn
                 if (isMyTurn && !isAnimating) {
                     diceEl.classList.remove('hidden');
                     diceCube.classList.remove('disabled');
-
+                    
                     if (gameData.diceValue) {
                         // There's a rolled value, so display it.
                         const rotations = {
@@ -1077,7 +829,7 @@
                     diceEl.classList.add('hidden');
                     diceCube.classList.add('disabled');
                 }
-
+                
                 updateMovablePieces(isMyTurn, gameData.diceValue);
 
             } else if (gameData.state === 'finished') {
@@ -1112,7 +864,7 @@
                 div.className = 'player-list-item';
                 let playerName = `${color.charAt(0).toUpperCase() + color.slice(1)} Player`;
                 let playerStatus = '';
-
+                
                 if (player) {
                     if (player.id === currentUser.uid) {
                         playerStatus = '(You)';
@@ -1136,9 +888,9 @@
                 gamePlayerList.appendChild(div);
             });
         }
-
+        
         // --- GAME LOGIC ---
-
+        
         function calculateNewPieceStateAndPosition(playerColor, currentPieceState, currentAbsolutePosition, diceValue) {
             let newState = currentPieceState;
             let newAbsolutePosition = currentAbsolutePosition;
@@ -1153,7 +905,7 @@
                 }
             } else if (currentPieceState === 'active') {
                 const potentialPosition = currentAbsolutePosition + diceValue;
-
+                
                 if (potentialPosition <= MAX_ACTIVE_POSITION) {
                     newState = 'active';
                     newAbsolutePosition = potentialPosition;
@@ -1182,14 +934,14 @@
                 const { isValid } = calculateNewPieceStateAndPosition(myColor, piece.state, piece.absolutePosition, diceValue);
                 if (isValid) {
                     const pieceEl = document.querySelector(`.piece[data-color="${myColor}"][data-piece-index="${index}"]`);
-                    if (pieceEl) {
+                    if(pieceEl) {
                         pieceEl.classList.add('movable');
                         pieceEl.style.setProperty('--color', `var(--${myColor})`);
                     }
                 }
             });
         }
-
+        
         async function animatePieceMove(pieceEl, color, startAbsolutePosition, endAbsolutePosition) {
             isAnimating = true;
             // rollDiceBtn.disabled = true; // Removed
@@ -1197,7 +949,7 @@
             document.querySelectorAll('.piece.movable').forEach(p => p.classList.remove('movable'));
 
             const boardRect = ludoBoard.getBoundingClientRect();
-
+            
             pieceEl.classList.add('piece-animating');
             ludoBoard.appendChild(pieceEl); // Move to board container for absolute positioning
 
@@ -1213,7 +965,7 @@
                     ];
                 } else {
                     console.error("Could not find base inner element for animation start.");
-                    startCoords = [0, 0]; // Fallback to 0,0 if element not found
+                    startCoords = [0,0]; // Fallback to 0,0 if element not found
                 }
             } else {
                 const cellEl = getCellElementByAbsolutePosition(color, startAbsolutePosition);
@@ -1226,7 +978,7 @@
                     ];
                 } else {
                     console.error(`Could not find start cell element for animation at absolute position ${startAbsolutePosition}`);
-                    startCoords = [0, 0]; // Fallback to 0,0 if element not found
+                    startCoords = [0,0]; // Fallback to 0,0 if element not found
                 }
             }
             pieceEl.style.top = `${startCoords[0]}px`;
@@ -1247,7 +999,7 @@
                 const cellEl = getCellElementByAbsolutePosition(color, currentAbsolutePos);
                 if (cellEl) {
                     const cellRect = cellEl.getBoundingClientRect();
-                    // Calculate center of cell relative to board
+                     // Calculate center of cell relative to board
                     pieceEl.style.top = `${(cellRect.top + cellRect.height / 2) - boardRect.top - pieceEl.offsetHeight / 2}px`;
                     pieceEl.style.left = `${(cellRect.left + cellRect.width / 2) - boardRect.left - pieceEl.offsetWidth / 2}px`;
                     await new Promise(res => setTimeout(res, 150)); // Delay for animation step
@@ -1255,14 +1007,14 @@
                     console.error(`Animation ERROR: Cell not found for absolute position ${currentAbsolutePos}`);
                 }
             }
-
+            
             pieceEl.classList.remove('piece-animating');
             pieceEl.style.top = '';
             pieceEl.style.left = '';
-
+            
             isAnimating = false;
         }
-
+        
         // Helper to get the DOM element for a given absolute position
         function getCellElementByAbsolutePosition(color, absolutePosition) {
             if (absolutePosition === HOME_POSITION_INDICATOR) {
@@ -1276,7 +1028,7 @@
             const coords = PLAYER_FULL_TRACK_COORDS[color][absolutePosition];
             if (coords) {
                 const [row, col] = coords;
-
+                
                 // Determine if it's a main path or home path cell
                 const isMainPathCell = MAIN_PATH.some(mc => mc[0] === row && mc[1] === col);
                 const isHomePathOnlyCell = HOME_PATHS[color].some(hc => hc[0] === row && hc[1] === col) && !isMainPathCell;
@@ -1289,13 +1041,13 @@
                 } else if (isHomePathOnlyCell) { // This handles cells specifically in a home path that are not also main path cells
                     const homePathIndex = HOME_PATHS[color].findIndex(p => p[0] === row && p[1] === col);
                     if (homePathIndex !== -1) {
-                        return document.querySelector(`.cell[data-type='home-${color}'][data-index='${homePathIndex}']`);
+                         return document.querySelector(`.cell[data-type='home-${color}'][data-index='${homePathIndex}']`);
                     }
                 }
             }
             return null;
         }
-
+        
         // --- FIREBASE ACTIONS ---
         async function createGame() {
             if (!currentUser) {
@@ -1318,8 +1070,8 @@
 
                 const newGame = {
                     creatorId: currentUser.uid,
-                    state: 'waiting',
-                    roomCode: roomCode,
+                    state: 'waiting', 
+                    roomCode: roomCode, 
                     players: [{
                         id: currentUser.uid, color: 'red',
                         pieces: Array(4).fill(null).map(() => ({ state: 'base', absolutePosition: -1 }))
@@ -1343,44 +1095,9 @@
             }
         }
 
-        // 🔴🔴 CHAT SETUP START 🔴🔴
-        const chatMessages = document.getElementById("chatMessages");
-        const chatForm = document.getElementById("chatForm");
-        const chatInput = document.getElementById("chatInput");
-
-        function setupChatListener(roomCode) {
-            const chatRef = collection(db, "chat", roomCode, "messages");
-            onSnapshot(chatRef, (snapshot) => {
-                chatMessages.innerHTML = "";
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    const div = document.createElement("div");
-                    div.innerHTML = `<strong class="text-yellow-400">${data.sender}:</strong> ${data.text}`;
-                    chatMessages.appendChild(div);
-                });
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            });
-        }
-
-        if (chatForm) {
-            chatForm.addEventListener("submit", async (e) => {
-                e.preventDefault();
-                const msg = chatInput.value.trim();
-                if (!msg || !currentGameData?.roomCode) return;
-                await addDoc(collection(db, "chat", currentGameData.roomCode, "messages"), {
-                    sender: currentGameData.players.find(p => p.id === currentUser.uid)?.color || "Player",
-                    text: msg,
-                    timestamp: Date.now()
-                });
-                chatInput.value = "";
-            });
-        }
-        // 🔴🔴 CHAT SETUP END 🔴🔴
-
-
         async function joinGame(code) {
             if (unsubscribeGameListener) unsubscribeGameListener();
-
+            
             const q = query(collection(db, `artifacts/${appId}/public/data/ludoGames`), where("roomCode", "==", code));
             console.log(`Attempting to join game with numerical code: ${code}`);
             const querySnapshot = await getDocs(q);
@@ -1400,7 +1117,7 @@
             if (!playerExists) {
                 if (gameData.players.length >= 4) { initialScreenError.textContent = "Game is full."; return; }
                 if (gameData.state !== 'waiting') { initialScreenError.textContent = "Game has started."; return; }
-
+                
                 const availableColors = COLORS.filter(c => !gameData.players.some(p => p.color === c));
                 if (availableColors.length === 0) {
                     initialScreenError.textContent = "No available colors for new player.";
@@ -1413,7 +1130,7 @@
                 };
                 await updateDoc(doc(db, `artifacts/${appId}/public/data/ludoGames`, gameId), { players: [...gameData.players, newPlayer] });
             }
-
+            
             currentGameId = gameId;
             initialScreen.classList.add('hidden');
             waitingRoomScreen.classList.remove('hidden'); // Show waiting room first
@@ -1459,22 +1176,22 @@
             }
 
             const diceResult = Math.floor(Math.random() * 6) + 1;
-
+            
             const rotations = {
                 1: 'rotateY(0deg)', 2: 'rotateY(-90deg)', 3: 'rotateY(-180deg)',
                 4: 'rotateY(90deg)', 5: 'rotateX(-90deg)', 6: 'rotateX(90deg)'
             };
-            diceCube.style.transform = `rotateX(${Math.random() * 1440 + 720}deg) rotateY(${Math.random() * 1440 + 720}deg)`;
+            diceCube.style.transform = `rotateX(${Math.random()*1440+720}deg) rotateY(${Math.random()*1440+720}deg)`;
             diceCube.classList.add('disabled'); // Disable dice click immediately after roll
 
             setTimeout(async () => {
                 diceCube.style.transform = rotations[diceResult];
                 const gameRef = doc(db, `artifacts/${appId}/public/data/ludoGames`, currentGameId);
-
+                
                 const player = currentGameData.players.find(p => p.color === myColor);
-
+                
                 const hasValidMoves = player.pieces.some((p, i) => calculateNewPieceStateAndPosition(myColor, p.state, p.absolutePosition, diceResult).isValid);
-
+                
                 await updateDoc(gameRef, { diceValue: diceResult });
 
                 if (!hasValidMoves) {
@@ -1482,14 +1199,14 @@
                 }
             }, 1500);
         }
-
+        
         async function handlePieceMove(e) {
             const pieceEl = e.target.closest('.piece.movable');
             if (!pieceEl || isAnimating) return;
 
             const color = pieceEl.dataset.color;
             const pieceIndex = parseInt(pieceEl.dataset.pieceIndex);
-
+            
             // Ensure it's the current user's turn and their piece
             const myColor = currentGameData.players.find(p => p.id === currentUser.uid)?.color;
             if (currentGameData.currentTurn !== myColor || color !== myColor) {
@@ -1502,7 +1219,7 @@
             const pieceToMove = player.pieces[pieceIndex];
             const diceValue = currentGameData.diceValue;
 
-            const { state: newPieceState, absolutePosition: newAbsolutePosition, isValid: moveIsValid } =
+            const { state: newPieceState, absolutePosition: newAbsolutePosition, isValid: moveIsValid } = 
                 calculateNewPieceStateAndPosition(color, pieceToMove.state, pieceToMove.absolutePosition, diceValue);
 
             if (!moveIsValid) {
@@ -1515,7 +1232,7 @@
             // Update local piece data
             pieceToMove.state = newPieceState;
             pieceToMove.absolutePosition = newAbsolutePosition;
-
+            
             await animatePieceMove(pieceEl, color, startAbsolutePosition, newAbsolutePosition);
 
             const gameRef = doc(db, `artifacts/${appId}/public/data/ludoGames`, currentGameId);
@@ -1529,7 +1246,7 @@
 
                 if (!isTargetSafeSpot) { // Only attempt kill if not a safe spot
                     const opponentPieceInfo = playersCopy
-                        .filter(p => p.color !== color)
+                        .filter(p => p.color !== color) 
                         .flatMap(p => p.pieces.map(piece => ({ piece, playerColor: p.color })))
                         .find(op => {
                             const opCoords = PLAYER_FULL_TRACK_COORDS[op.playerColor][op.piece.absolutePosition];
@@ -1546,7 +1263,7 @@
                     console.log(`Landed on a safe spot (${targetCoords}). No kill.`);
                 }
             }
-
+            
             // Check for winner
             const allPiecesHome = player.pieces.every(p => p.state === 'home');
             if (allPiecesHome) {
@@ -1554,24 +1271,20 @@
                 updates.state = 'finished';
             }
 
-            const wasKill = checkAndHandleKill(currentUser.uid, selectedToken.pos, currentGameData);
-
-            if ((diceValue !== 6 || allPiecesHome) && !wasKill) {
+            if (diceValue !== 6 || allPiecesHome) {
                 const currentIndex = COLORS.indexOf(currentGameData.currentTurn);
                 let nextPlayerIndex = (currentIndex + 1) % COLORS.length;
                 let nextPlayerColor = COLORS[nextPlayerIndex];
-
                 while (!playersCopy.some(p => p.color === nextPlayerColor) && nextPlayerIndex !== currentIndex) {
                     nextPlayerIndex = (nextPlayerIndex + 1) % COLORS.length;
                     nextPlayerColor = COLORS[nextPlayerIndex];
                 }
-
                 updates.currentTurn = nextPlayerColor;
             }
-            updates.diceValue = null;
+            updates.diceValue = null; 
             await updateDoc(gameRef, updates);
         }
-
+        
         async function passTurn() {
             const gameRef = doc(db, `artifacts/${appId}/public/data/ludoGames`, currentGameId);
             const currentIndex = COLORS.indexOf(currentGameData.currentTurn);
@@ -1583,7 +1296,7 @@
             }
             await updateDoc(gameRef, { currentTurn: nextPlayerColor, diceValue: null });
         }
-
+        
         async function resetGame() {
             if (!currentGameId || currentGameData.creatorId !== currentUser.uid) return;
             const gameRef = doc(db, `artifacts/${appId}/public/data/ludoGames`, currentGameId);
@@ -1606,7 +1319,7 @@
                     text: codeToShare,
                     // url: shareUrl, // Removed URL as per user request
                 }).then(() => console.log('Shared successfully'))
-                    .catch((error) => console.error('Error sharing:', error));
+                  .catch((error) => console.error('Error sharing:', error));
             } else {
                 // Fallback for browsers that don't support Web Share API (e.g., desktop)
                 const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(codeToShare)}`;
@@ -1633,7 +1346,7 @@
         diceCube.addEventListener('click', handleRollDice); // New event listener for dice cube
         ludoBoard.addEventListener('click', handlePieceMove);
         playAgainBtn.addEventListener('click', resetGame);
-
+        
         // Copy code buttons
         copyCodeBtn.addEventListener('click', () => {
             const codeToCopy = currentGameData ? currentGameData.roomCode : '';
@@ -1678,30 +1391,6 @@
         // --- INITIALIZE ---
         buildBoard();
         console.log("Script loaded successfully and all tags are closed.");
-
-        function removePlayerFromRoom() {
-            const roomCode = localStorage.getItem("roomCode");
-            if (!roomCode || !uid) return;
-
-            const roomRef = db.collection("ludoRooms").doc(roomCode);
-            const playerField = `players.${uid}`;
-
-            roomRef.update({
-                [playerField]: firebase.firestore.FieldValue.delete()
-            }).then(() => {
-                console.log("Player removed on disconnect.");
-            }).catch((error) => {
-                console.error("Error removing player:", error);
-            });
-        }
-
-        window.addEventListener("beforeunload", removePlayerFromRoom);
-
     </script>
-
-    <audio id="diceSound" src="https://cdn.pixabay.com/audio/2023/03/23/audio_7aa02bf52b.mp3"></audio>
-    <audio id="moveSound" src="https://cdn.pixabay.com/audio/2023/03/28/audio_d4edb36971.mp3"></audio>
-    <audio id="winSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_5b2f87a2bb.mp3"></audio>
 </body>
-
 </html>
