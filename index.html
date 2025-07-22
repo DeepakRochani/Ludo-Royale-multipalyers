@@ -4,7 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ludo Royale</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com">
+function removePlayerFromRoom() {
+  const roomCode = localStorage.getItem("roomCode");
+  if (!roomCode || !uid) return;
+
+  const roomRef = db.collection("ludoRooms").doc(roomCode);
+  const playerField = `players.${uid}`;
+
+  roomRef.update({
+    [playerField]: firebase.firestore.FieldValue.delete()
+  }).then(() => {
+    console.log("Player removed on disconnect.");
+  }).catch((error) => {
+    console.error("Error removing player:", error);
+  });
+}
+
+window.addEventListener("beforeunload", removePlayerFromRoom);
+
+</script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* Sticky Roll Dice Button for Mobile (no longer needed, but keeping for reference if design changes) */
@@ -1391,6 +1410,30 @@
         // --- INITIALIZE ---
         buildBoard();
         console.log("Script loaded successfully and all tags are closed.");
-    </script>
+    
+function removePlayerFromRoom() {
+  const roomCode = localStorage.getItem("roomCode");
+  if (!roomCode || !uid) return;
+
+  const roomRef = db.collection("ludoRooms").doc(roomCode);
+  const playerField = `players.${uid}`;
+
+  roomRef.update({
+    [playerField]: firebase.firestore.FieldValue.delete()
+  }).then(() => {
+    console.log("Player removed on disconnect.");
+  }).catch((error) => {
+    console.error("Error removing player:", error);
+  });
+}
+
+window.addEventListener("beforeunload", removePlayerFromRoom);
+
+</script>
+
+<audio id="diceSound" src="https://cdn.pixabay.com/audio/2023/03/23/audio_7aa02bf52b.mp3"></audio>
+<audio id="moveSound" src="https://cdn.pixabay.com/audio/2023/03/28/audio_d4edb36971.mp3"></audio>
+<audio id="winSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_5b2f87a2bb.mp3"></audio>
 </body>
-</html>
+
+</html> 
