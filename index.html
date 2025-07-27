@@ -4,7 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ludo Royale</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com">
+function removePlayerFromRoom() {
+  const roomCode = localStorage.getItem("roomCode");
+  if (!roomCode || !uid) return;
+
+  const roomRef = db.collection("ludoRooms").doc(roomCode);
+  const playerField = `players.${uid}`;
+
+  roomRef.update({
+    [playerField]: firebase.firestore.FieldValue.delete()
+  }).then(() => {
+    console.log("Player removed on disconnect.");
+  }).catch((error) => {
+    console.error("Error removing player:", error);
+  });
+}
+
+window.addEventListener("beforeunload", removePlayerFromRoom);
+
+</script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* Sticky Roll Dice Button for Mobile (no longer needed, but keeping for reference if design changes) */
@@ -338,54 +357,6 @@
         }
 
     </style>
-
-    <!-- Improved refresh blocking script -->
-    <script>
-        // Block refresh, back button, and navigation attempts
-        function blockNavigation(e) {
-            // Only block if game is in progress (not on initial screen)
-            const initialScreen = document.getElementById('initialScreen');
-            const gameScreen = document.getElementById('gameScreen');
-            const waitingRoomScreen = document.getElementById('waitingRoomScreen');
-            
-            // If game is in progress (either in waiting room or playing)
-            if (!initialScreen.classList.contains('hidden') || 
-                !gameScreen.classList.contains('hidden') || 
-                !waitingRoomScreen.classList.contains('hidden')) {
-                
-                // Prevent the event
-                e.preventDefault();
-                // Chrome requires returnValue to be set
-                e.returnValue = '';
-                // Show a custom message (works in some browsers)
-                return 'Are you sure you want to leave? Your game progress will be lost.';
-            }
-        }
-
-        // Set up all possible navigation blocking
-        function setupNavigationBlocking() {
-            // Beforeunload - works for page refresh/closing
-            window.addEventListener('beforeunload', blockNavigation);
-            
-            // Popstate - works for back/forward navigation
-            window.addEventListener('popstate', function() {
-                history.pushState(null, null, document.URL);
-                blockNavigation(new Event('popstate'));
-            });
-            
-            // Hashchange - additional protection
-            window.addEventListener('hashchange', function() {
-                history.pushState(null, null, document.URL);
-                blockNavigation(new Event('hashchange'));
-            });
-            
-            // Initial pushState to prevent back navigation to blank state
-            history.pushState(null, null, document.URL);
-        }
-
-        // Call setup when page loads
-        document.addEventListener('DOMContentLoaded', setupNavigationBlocking);
-    </script>
 </head>
 <body class="text-gray-200">
 
@@ -1319,23 +1290,16 @@
                 updates.state = 'finished';
             }
 
-            
-let retainTurn = false;
-if (diceValue === 6 || opponentPieceInfo) {
-  retainTurn = true;
-}
-
-if (!retainTurn || allPiecesHome) {
-  const currentIndex = COLORS.indexOf(currentGameData.currentTurn);
-  let nextPlayerIndex = (currentIndex + 1) % COLORS.length;
-  let nextPlayerColor = COLORS[nextPlayerIndex];
-  while (!playersCopy.some(p => p.color === nextPlayerColor) && nextPlayerIndex !== currentIndex) {
-    nextPlayerIndex = (nextPlayerIndex + 1) % COLORS.length;
-    nextPlayerColor = COLORS[nextPlayerIndex];
-  }
-  updates.currentTurn = nextPlayerColor;
-}
-
+            if (diceValue !== 6 || allPiecesHome) {
+                const currentIndex = COLORS.indexOf(currentGameData.currentTurn);
+                let nextPlayerIndex = (currentIndex + 1) % COLORS.length;
+                let nextPlayerColor = COLORS[nextPlayerIndex];
+                while (!playersCopy.some(p => p.color === nextPlayerColor) && nextPlayerIndex !== currentIndex) {
+                    nextPlayerIndex = (nextPlayerIndex + 1) % COLORS.length;
+                    nextPlayerColor = COLORS[nextPlayerIndex];
+                }
+                updates.currentTurn = nextPlayerColor;
+            }
             updates.diceValue = null; 
             await updateDoc(gameRef, updates);
         }
@@ -1447,11 +1411,29 @@ if (!retainTurn || allPiecesHome) {
         buildBoard();
         console.log("Script loaded successfully and all tags are closed.");
     
+function removePlayerFromRoom() {
+  const roomCode = localStorage.getItem("roomCode");
+  if (!roomCode || !uid) return;
 
-    </script>
+  const roomRef = db.collection("ludoRooms").doc(roomCode);
+  const playerField = `players.${uid}`;
 
-    <audio id="diceSound" src="https://cdn.pixabay.com/audio/2023/03/23/audio_7aa02bf52b.mp3"></audio>
-    <audio id="moveSound" src="https://cdn.pixabay.com/audio/2023/03/28/audio_d4edb36971.mp3"></audio>
-    <audio id="winSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_5b2f87a2bb.mp3"></audio>
+  roomRef.update({
+    [playerField]: firebase.firestore.FieldValue.delete()
+  }).then(() => {
+    console.log("Player removed on disconnect.");
+  }).catch((error) => {
+    console.error("Error removing player:", error);
+  });
+}
+
+window.addEventListener("beforeunload", removePlayerFromRoom);
+
+</script>
+
+<audio id="diceSound" src="https://cdn.pixabay.com/audio/2023/03/23/audio_7aa02bf52b.mp3"></audio>
+<audio id="moveSound" src="https://cdn.pixabay.com/audio/2023/03/28/audio_d4edb36971.mp3"></audio>
+<audio id="winSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_5b2f87a2bb.mp3"></audio>
 </body>
-</html>
+
+</html> 
