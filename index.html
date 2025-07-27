@@ -5,23 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ludo Royale</title>
     <script src="https://cdn.tailwindcss.com">
-function removePlayerFromRoom() {
-  const roomCode = localStorage.getItem("roomCode");
-  if (!roomCode || !uid) return;
 
-  const roomRef = db.collection("ludoRooms").doc(roomCode);
-  const playerField = `players.${uid}`;
-
-  roomRef.update({
-    [playerField]: firebase.firestore.FieldValue.delete()
-  }).then(() => {
-    console.log("Player removed on disconnect.");
-  }).catch((error) => {
-    console.error("Error removing player:", error);
-  });
-}
-
-window.addEventListener("beforeunload", removePlayerFromRoom);
 
 
 window.addEventListener("beforeunload", function (e) {
@@ -363,6 +347,19 @@ window.addEventListener("beforeunload", function (e) {
         }
 
     </style>
+
+<script>
+// Disable refresh, back button and accidental navigation
+history.pushState(null, null, location.href);
+window.addEventListener('popstate', function () {
+  history.pushState(null, null, location.href);
+});
+window.addEventListener('beforeunload', function (e) {
+  e.preventDefault();
+  e.returnValue = '';
+});
+</script>
+
 </head>
 <body class="text-gray-200">
 
@@ -1424,23 +1421,7 @@ if (!retainTurn || allPiecesHome) {
         buildBoard();
         console.log("Script loaded successfully and all tags are closed.");
     
-function removePlayerFromRoom() {
-  const roomCode = localStorage.getItem("roomCode");
-  if (!roomCode || !uid) return;
 
-  const roomRef = db.collection("ludoRooms").doc(roomCode);
-  const playerField = `players.${uid}`;
-
-  roomRef.update({
-    [playerField]: firebase.firestore.FieldValue.delete()
-  }).then(() => {
-    console.log("Player removed on disconnect.");
-  }).catch((error) => {
-    console.error("Error removing player:", error);
-  });
-}
-
-window.addEventListener("beforeunload", removePlayerFromRoom);
 
 </script>
 
