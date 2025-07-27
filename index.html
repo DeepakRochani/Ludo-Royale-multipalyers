@@ -23,6 +23,12 @@ function removePlayerFromRoom() {
 
 window.addEventListener("beforeunload", removePlayerFromRoom);
 
+
+window.addEventListener("beforeunload", function (e) {
+  e.preventDefault();
+  e.returnValue = '';
+});
+
 </script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -1290,16 +1296,23 @@ window.addEventListener("beforeunload", removePlayerFromRoom);
                 updates.state = 'finished';
             }
 
-            if (diceValue !== 6 || allPiecesHome) {
-                const currentIndex = COLORS.indexOf(currentGameData.currentTurn);
-                let nextPlayerIndex = (currentIndex + 1) % COLORS.length;
-                let nextPlayerColor = COLORS[nextPlayerIndex];
-                while (!playersCopy.some(p => p.color === nextPlayerColor) && nextPlayerIndex !== currentIndex) {
-                    nextPlayerIndex = (nextPlayerIndex + 1) % COLORS.length;
-                    nextPlayerColor = COLORS[nextPlayerIndex];
-                }
-                updates.currentTurn = nextPlayerColor;
-            }
+            
+let retainTurn = false;
+if (diceValue === 6 || opponentPieceInfo) {
+  retainTurn = true;
+}
+
+if (!retainTurn || allPiecesHome) {
+  const currentIndex = COLORS.indexOf(currentGameData.currentTurn);
+  let nextPlayerIndex = (currentIndex + 1) % COLORS.length;
+  let nextPlayerColor = COLORS[nextPlayerIndex];
+  while (!playersCopy.some(p => p.color === nextPlayerColor) && nextPlayerIndex !== currentIndex) {
+    nextPlayerIndex = (nextPlayerIndex + 1) % COLORS.length;
+    nextPlayerColor = COLORS[nextPlayerIndex];
+  }
+  updates.currentTurn = nextPlayerColor;
+}
+
             updates.diceValue = null; 
             await updateDoc(gameRef, updates);
         }
